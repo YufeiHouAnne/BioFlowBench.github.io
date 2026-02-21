@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioFlowBench: A Comprehensive Benchmark for Evaluating Bioinformatics Tool-use Capabilities of LLMs and Agents</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .hero-section { background-color: #f8f9fa; padding: 60px 0; text-align: center; }
+        #kg-network { width: 100%; height: 500px; border: 1px solid #dee2e6; border-radius: 8px; background-color: #ffffff; }
+        .section-title { margin-top: 40px; margin-bottom: 20px; font-weight: bold; }
+        .chart-container { 
+            width: 100%; 
+            height: 400px; 
+        }
+        .radar-container {
+            width: 100%;
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">BioFlowBench</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#knowledge-graph">BioKG</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#leaderboard">Leaderboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#datasets">Dataset</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="display-4">BioFlowBench: A Comprehensive Benchmark for Evaluating Bioinformatics Tool-use Capabilities of LLMs and Agents</h1>
+            <p class="lead text-muted mt-3">
+  YuFei Hou<sup>1</sup>, Jiajia Wang<sup>1</sup>, Ke Xiang<sup>1</sup>, Qingqing Long<sup>1</sup>, Yuanchun Zhou<sup>1</sup>, Zhen Meng<sup>1*</sup><br>
+  <small><sup>1</sup> Computer Network Information Center, Chinese Academy of Sciences</small>
+</p>
+            <a href="https://github.com/YufeiHouAnne/BioFlowBench" class="btn btn-primary btn-lg mt-2">View on GitHub</a>
+        </div>
+    </section>
+
+    <div class="container">
+        <div id="knowledge-graph" style="position: relative;">
+            <h2 class="section-title">🔗 BioKG: A Knowledge Graph for Bioinformatics Tools</h2>
+            <p class="text-muted">BioKG comprises 1143 tool entities, 3274 version nodes and 173 workflows.</p>
+            <div id="kg-network"></div>
+
+            <div id="info-card" class="card shadow-sm" style="display: none; position: absolute; top: 20px; right: 20px; width: 350px; max-height: 400px; overflow-y: auto; z-index: 1000; border-left: 5px solid #97c2fc; background-color: rgba(255, 255, 255, 0.95);">
+                <div class="card-body">
+                    <h5 class="card-title" id="card-title">节点名称</h5>
+                    <div class="card-text text-muted" id="card-content" style="font-size: 0.85rem; word-break: break-all;">节点描述信息</div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="my-5">
+
+        <div id="leaderboard">
+            <h2 class="section-title">🏆 Leaderboard</h2>
+            <p class="text-muted">The performance of LLMs and Agents on BioFlowBench.</p>
+            
+            <div class="row g-4 mt-2">
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div id="radar1" class="radar-container"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-4 mt-2">
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div id="radar2" class="radar-container"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mt-4">
+    <div class="col-12">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <div id="chart1" class="chart-container" style="min-height: 400px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+        </div>
+
+        <hr class="my-5">
+
+        <div id="datasets" class="mb-5">
+    <h2 class="section-title">📦 DataSet</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Syntax Understanding</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Single Choice</h6>
+                    <p class="card-text">Tests tool definitions, parameters, and version sensitivity.</p>
+                    <a href="https://github.com/YufeiHouAnne/BioFlowBench/blob/main/Dataset/Eval_SU.py" class="card-link">Load Data </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Contextual Application</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Fill-in-the-Blank</h6>
+                    <p class="card-text">Tests the ability to apply tools in specific biological contexts.</p>
+                    <a href="https://github.com/YufeiHouAnne/BioFlowBench/blob/main/Dataset/Eval_CA.py" class="card-link">Load Data </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Real-World Execution</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Workflow Test.</h6>
+                    <p class="card-text">Measuresthe ability to generate and execute complete bioinformatics workflows in a real shell environment.</p>
+                    <a href="https://github.com/YufeiHouAnne/BioFlowBench/tree/main/BioGen" class="card-link">Data Generation </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+
+    <footer class="bg-dark text-light py-4 text-center">
+        <p class="mb-0">&copy; 2026 BioFlowBench Project Team. Open sourced under MIT License.</p>
+    </footer>
+
+    <script>
+        // ==========================================
+        // 1. 初始化知识图谱 (BioKG)
+        // ==========================================
+        const nodes = new vis.DataSet(
+[
+    {
+        "output": [],
+        "input": [],
+        "publication": "[{\"doi\": \"10.1093/bioinformatics/btv710\", \"title\": \"\", \"abstract\": \"\"}]",
+        "name": "Manta",
+        "topic": [
+            "Oncology",
+            "Genetics",
+            "DNA structural variation"
+        ],
+        "description": "Calls structural variants (SVs) and indels from mapped paired-end sequencing reads.",
+        "links": [
+            "http://www.mybiosoftware.com/manta-structural-variant-and-indel-caller-for-mapped-sequencing-data.html"
+        ],
+        "language": [
+            "C++",
+            "Python"
+        ],
+        "operation": [
+            "Variant calling"
+        ],
+        "operatingSystem": [
+            "Linux"
+        ],
+        "toolType": [
+            "Command-line tool"
+        ],
+        "biotoolID": "manta_sv",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:57",
+        "label": "Manta",
+        "shape": "dot",
+        "color": "#fb7e81",
+        "size": 30,
+        "neo4j_labels": [
+            "Tool"
+        ]
+    },
+    {
+        "versionID": "manta_sv0.29.1",
+        "Parameter": "{\"Command\": [{\"Parameter\": \"--version\", \"Description\": \"show program's version number and exit\"}, {\"Parameter\": \"-h, --help\", \"Description\": \"show this help message and exit\"}, {\"Parameter\": \"--config=FILE\", \"Description\": \"provide a configuration file to override defaults in global config file (/home/houyufei/miniconda3/envs/tmp_manta_3359fac8/bin/configManta.py.ini)\"}, {\"Parameter\": \"--allHelp\", \"Description\": \"show all extended/hidden options\"}, {\"Parameter\": \"--bam=FILE, --normalBam=FILE\", \"Description\": \"Normal sample BAM or CRAM file. May be specified more than once, multiple inputs will be treated as each BAM file representing a different sample. [optional] (no default)\"}, {\"Parameter\": \"--tumorBam=FILE, --tumourBam=FILE\", \"Description\": \"Tumor sample BAM or CRAM file. Only up to one tumor bam file accepted. [optional] (no default)\"}, {\"Parameter\": \"--exome\", \"Description\": \"Set options for WES input: turn off depth filters\"}, {\"Parameter\": \"--rna\", \"Description\": \"Set options for RNA-Seq input: turn off depth filters and don't treat anomalous reads as SV evidence when the proper-pair bit is set.\"}, {\"Parameter\": \"--unstrandedRNA\", \"Description\": \"Set if RNA-Seq input is unstranded: Allows splice-junctions on either strand\"}, {\"Parameter\": \"--referenceFasta=FILE\", \"Description\": \"samtools-indexed reference fasta file [required]\"}, {\"Parameter\": \"--runDir=DIR\", \"Description\": \"Run script and run output will be written to this directory [required] (default: MantaWorkflow)\"}, {\"Parameter\": \"--scanSizeMb=INT\", \"Description\": \"Maximum sequence region size (in megabases) scanned by each task during SV Locus graph generation. (default: 12)\"}, {\"Parameter\": \"--region=REGION\", \"Description\": \"Limit the analysis to a region of the genome for debugging purposes. If this argument is provided multiple times all specified regions will be analyzed together. All regions must be non-overlapping to get a meaningful result. Examples: '--region chr20' (whole chromosome), '--region chr2:100-2000 --region chr3:2500-3000' (two regions)'\"}]}",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:58",
+        "label": "0.29.1",
+        "shape": "dot",
+        "color": "#97c2fc",
+        "size": 20,
+        "neo4j_labels": [
+            "Version"
+        ]
+    },
+    {
+        "versionID": "manta_sv1.6.0",
+        "Parameter": "{\"Command\": [{\"Parameter\": \"--version\", \"Description\": \"show program's version number and exit\"}, {\"Parameter\": \"-h, --help\", \"Description\": \"show this help message and exit\"}, {\"Parameter\": \"--config=FILE\", \"Description\": \"provide a configuration file to override defaults in global config file (/home/houyufei/miniconda3/envs/tmp_manta_30b8c7a9/bin/configManta.py.ini)\"}, {\"Parameter\": \"--allHelp\", \"Description\": \"show all extended/hidden options\"}, {\"Parameter\": \"--bam=FILE, --normalBam=FILE\", \"Description\": \"Normal sample BAM or CRAM file. May be specified more than once, multiple inputs will be treated as each BAM file representing a different sample. [optional] (no default)\"}, {\"Parameter\": \"--tumorBam=FILE, --tumourBam=FILE\", \"Description\": \"Tumor sample BAM or CRAM file. Only up to one tumor bam file accepted. [optional] (no default)\"}, {\"Parameter\": \"--exome\", \"Description\": \"Set options for WES input: turn off depth filters\"}, {\"Parameter\": \"--rna\", \"Description\": \"Set options for RNA-Seq input. Must specify exactly one bam input file\"}, {\"Parameter\": \"--unstrandedRNA\", \"Description\": \"Set if RNA-Seq input is unstranded: Allows splice-junctions on either strand\"}, {\"Parameter\": \"--referenceFasta=FILE\", \"Description\": \"samtools-indexed reference fasta file [required]\"}, {\"Parameter\": \"--runDir=DIR\", \"Description\": \"Name of directory to be created where all workflow scripts and output will be written. Each analysis requires a separate directory. (default: MantaWorkflow)\"}, {\"Parameter\": \"--callRegions=FILE\", \"Description\": \"Optionally provide a bgzip-compressed/tabix-indexed BED file containing the set of regions to call. No VCF output will be provided outside of these regions. The full genome will still be used to estimate statistics from the input (such as expected fragment size distribution). Only one BED file may be specified. (default: call the entire genome)\"}]}",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:59",
+        "label": "1.6.0",
+        "shape": "dot",
+        "color": "#97c2fc",
+        "size": 20,
+        "neo4j_labels": [
+            "Version"
+        ]
+    },
+    {
+        "versionID": "Paragraph2.3",
+        "Parameter": "{\"Command\": [{\"Parameter\": \"--bad-align-frac\", \"Description\": \"Fraction of read that needs to be mapped in order for it to be used.\"}, {\"Parameter\": \"--bad-align-nonuniq\", \"Description\": \"Remove reads that are not mapped uniquely.\"}, {\"Parameter\": \"--bad-align-uniq-kmer-len\", \"Description\": \"Kmer length for uniqueness check during read filtering.\"}, {\"Parameter\": \"-b [ --bam ]\", \"Description\": \"Input BAM file(s) for read extraction. We align all reads to all graphs.\"}, {\"Parameter\": \"--graph-sequence-matching\", \"Description\": \"Enables smith waterman graph alignment\"}, {\"Parameter\": \"-g [ --graph-spec ]\", \"Description\": \"JSON file(s) describing the graph(s)\"}, {\"Parameter\": \"-z [ --gzip-output ]\", \"Description\": \"gzip-compress output files. If -O is used, output file names are appended with .gz\"}, {\"Parameter\": \"-h [ --help ]\", \"Description\": \"produce help message and exit\"}, {\"Parameter\": \"--help-defaults\", \"Description\": \"produce tab-delimited list of command line options and their default values\"}, {\"Parameter\": \"--help-md\", \"Description\": \"produce help message pre-formatted as a markdown file section and exit\"}, {\"Parameter\": \"--klib-sequence-matching\", \"Description\": \"Use klib smith-waterman aligner.\"}, {\"Parameter\": \"--kmer-sequence-matching\", \"Description\": \"Use kmer aligner.\"}, {\"Parameter\": \"--log-async\", \"Description\": \"Enable / disable async logging.\"}, {\"Parameter\": \"--log-file\", \"Description\": \"Log to a file instead of stderr.\"}, {\"Parameter\": \"--log-level\", \"Description\": \"Set log level (error, warning, info).\"}, {\"Parameter\": \"-M [ --max-reads-per-event ]\", \"Description\": \"Maximum number of reads to process for a single event.\"}, {\"Parameter\": \"-a [ --output-alignments ]\", \"Description\": \"Output alignments for every read (large).\"}, {\"Parameter\": \"--output-detailed-read-counts\", \"Description\": \"Output detailed read counts not just for paths but also for each node/edge on the paths.\"}, {\"Parameter\": \"-E [ --output-everything ]\", \"Description\": \"Write all information we have into JSON. (=enable all --output-* above)\"}, {\"Parameter\": \"-o [ --output-file ]\", \"Description\": \"Output file name. Will output to stdout if '-' or neither of output-file or output-folder provided.\"}, {\"Parameter\": \"-A [ --output-filtered-alignments ]\", \"Description\": \"Output alignments for every read even when it was filtered (larger).\"}, {\"Parameter\": \"-O [ --output-folder ]\", \"Description\": \"Output folder path. paragraph will attempt to create the folder but not the entire path. Will output to stdout if neither of output-file or output-folder provided. If specified, paragraph will produce one output file for each input file bearing the same name.\"}, {\"Parameter\": \"--output-node-coverage\", \"Description\": \"Output coverage for nodes\"}, {\"Parameter\": \"--output-path-coverage\", \"Description\": \"Output coverage for paths\"}, {\"Parameter\": \"--output-read-haplotypes\", \"Description\": \"Output graph haplotypes supported by reads.\"}, {\"Parameter\": \"-v [ --output-variants ]\", \"Description\": \"Output variants not present in the graph.\"}, {\"Parameter\": \"--path-sequence-matching\", \"Description\": \"Enable path seeding aligner\"}, {\"Parameter\": \"-r [ --reference ]\", \"Description\": \"Reference genome fasta file.\"}, {\"Parameter\": \"--response-file\", \"Description\": \"file with more command line arguments\"}, {\"Parameter\": \"-T [ --target-regions ]\", \"Description\": \"Comma-separated list of target regions, e.g. chr1:1-20,chr2:2-40. This overrides the target regions in the graph spec.\"}, {\"Parameter\": \"--threads\", \"Description\": \"Number of threads to use for parallel alignment.\"}, {\"Parameter\": \"--validate-alignments\", \"Description\": \"Use information in the input bam read names to collect statistics about the accuracy of alignments. Requires bam file produced with simulate-reads.sh\"}, {\"Parameter\": \"--variant-min-frac\", \"Description\": \"Minimum fraction of reads required to report a variant.\"}, {\"Parameter\": \"--variant-min-reads\", \"Description\": \"Minimum number of reads required to report a variant.\"}, {\"Parameter\": \"-v [ --version ]\", \"Description\": \"print program version information\"}]}",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:267",
+        "label": "2.3",
+        "shape": "dot",
+        "color": "#97c2fc",
+        "size": 20,
+        "neo4j_labels": [
+            "Version"
+        ]
+    },
+    {
+        "output": [],
+        "input": [],
+        "publication": "[{\"doi\": \"10.1101/635011\", \"title\": \"\", \"abstract\": \"\"}]",
+        "name": "Paragraph",
+        "topic": [
+            "Genotype and phenotype"
+        ],
+        "description": "Graph realignment tools for structural variants.",
+        "links": [
+            "https://github.com/Illumina/paragraph/issues"
+        ],
+        "language": [
+            "C++",
+            "Python"
+        ],
+        "operation": [
+            "Read binning",
+            "Genotyping",
+            "Structural variation detection"
+        ],
+        "operatingSystem": [
+            "Linux",
+            "Windows",
+            "Mac"
+        ],
+        "toolType": [
+            "Suite"
+        ],
+        "biotoolID": "Paragraph",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:264",
+        "label": "Paragraph",
+        "shape": "dot",
+        "color": "#fb7e81",
+        "size": 30,
+        "neo4j_labels": [
+            "Tool"
+        ]
+    },
+    {
+        "versionID": "oakvar2.11.11",
+        "Parameter": "{\"Command\": [{\"Parameter\": \"-h\", \"Description\": \"show this help message and exit\"}, {\"Parameter\": \"--help\", \"Description\": \"show this help message and exit\"}, {\"Parameter\": \"run\", \"Description\": \"Run a job\"}, {\"Parameter\": \"report\", \"Description\": \"Generate a report from a job\"}, {\"Parameter\": \"module\", \"Description\": \"Manages OakVar modules\"}, {\"Parameter\": \"gui\", \"Description\": \"Start the GUI\"}, {\"Parameter\": \"config\", \"Description\": \"Manages OakVar configurations\"}, {\"Parameter\": \"new\", \"Description\": \"Create OakVar example input files and module templates\"}, {\"Parameter\": \"store\", \"Description\": \"Publish modules to the store\"}, {\"Parameter\": \"util\", \"Description\": \"OakVar utilities\"}, {\"Parameter\": \"version\", \"Description\": \"Show version\"}, {\"Parameter\": \"issue\", \"Description\": \"Send an issue report\"}, {\"Parameter\": \"system\", \"Description\": \"Commands on OakVar system\"}, {\"Parameter\": \"license\", \"Description\": \"Shows license information.\"}, {\"Parameter\": \"update\", \"Description\": \"Updates OakVar to the latest version.\"}]}",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:301",
+        "label": "2.11.11",
+        "shape": "dot",
+        "color": "#97c2fc",
+        "size": 20,
+        "neo4j_labels": [
+            "Version"
+        ]
+    },
+    {
+        "versionID": "freebayes1.3.6",
+        "Parameter": "{\"Command\": [{\"Parameter\": \"-h --help\", \"Description\": \"For a complete description of options.\"}, {\"Parameter\": \"-h --help\", \"Description\": \"Prints this help dialog.\"}, {\"Parameter\": \"--version\", \"Description\": \"Prints the release number and the git commit id.\"}, {\"Parameter\": \"-b --bam FILE\", \"Description\": \"Add FILE to the set of BAM files to be analyzed.\"}, {\"Parameter\": \"-L --bam-list FILE\", \"Description\": \"A file containing a list of BAM files to be analyzed.\"}, {\"Parameter\": \"-c --stdin\", \"Description\": \"Read BAM input on stdin.\"}, {\"Parameter\": \"-f --fasta-reference FILE\", \"Description\": \"Use FILE as the reference sequence for analysis.\\n                   An index file (FILE.fai) will be created if none exists.\\n                   If neither --targets nor --region are specified, FreeBayes\\n                   will analyze every position in this reference.\"}, {\"Parameter\": \"-t --targets FILE\", \"Description\": \"Limit analysis to targets listed in the BED-format FILE.\"}, {\"Parameter\": \"-r --region <chrom>:<start_position>-<end_position>\", \"Description\": \"Limit analysis to the specified region, 0-base coordinates,\\n                   end_position not included (same as BED format).\\n                   Either '-' or '..' maybe used as a separator.\"}, {\"Parameter\": \"-s --samples FILE\", \"Description\": \"Limit analysis to samples listed (one per line) in the FILE.\\n                   By default FreeBayes will analyze all samples in its input\\n                   BAM files.\"}, {\"Parameter\": \"--populations FILE\", \"Description\": \"Each line of FILE should list a sample and a population which\\n                   it is part of.  The population-based bayesian inference model\\n                   will then be partitioned on the basis of the populations.\"}, {\"Parameter\": \"-A --cnv-map FILE\", \"Description\": \"Read a copy number map from the BED file FILE, which has\\n                   either a sample-level ploidy:\\n                      sample_name copy_number\\n                   or a region-specific format:\\n                      seq_name start end sample_name copy_number\\n                   ... for each region in each sample which does not have the\\n                   default copy number as set by --ploidy. These fields can be delimited\\n                   by space or tab.\"}, {\"Parameter\": \"-v --vcf FILE\", \"Description\": \"Output VCF-format results to FILE. (default: stdout)\"}, {\"Parameter\": \"--gvcf\", \"Description\": \"Write gVCF output, which indicates coverage in uncalled regions.\"}, {\"Parameter\": \"--gvcf-chunk NUM\", \"Description\": \"When writing gVCF output emit a record for every NUM bases.\"}, {\"Parameter\": \"-& --gvcf-dont-use-chunk BOOL\", \"Description\": \"When writing the gVCF output emit a record for all bases if\\n                   set to \\\"true\\\" , will also route an int to --gvcf-chunk\\n                   similar to --output-mode EMIT_ALL_SITES from GATK\"}, {\"Parameter\": \"-@ --variant-input VCF\", \"Description\": \"Use variants reported in VCF file as input to the algorithm.\\n                   Variants in this file will included in the output even if\\n                   there is not enough support in the data to pass input filters.\"}, {\"Parameter\": \"-l --only-use-input-alleles\", \"Description\": \"Only provide variant calls and genotype likelihoods for sites\\n                   and alleles which are provided in the VCF input, and provide\\n                   output in the VCF for all input alleles, not just those which\\n                   have support in the data.\"}, {\"Parameter\": \"--haplotype-basis-alleles VCF\", \"Description\": \"When specified, only variant alleles provided in this input\\n                   VCF will be used for the construction of complex or haplotype\\n                   alleles.\"}, {\"Parameter\": \"--report-all-haplotype-alleles\", \"Description\": \"At sites where genotypes are made over haplotype alleles,\\n                   provide information about all alleles in output, not only\\n                   those which are called.\"}, {\"Parameter\": \"--report-monomorphic\", \"Description\": \"Report even loci which appear to be monomorphic, and report all\\n                   considered alleles, even those which are not in called genotypes.\\n                   Loci which do not have any potential alternates have '.' for ALT.\"}, {\"Parameter\": \"-P --pvar N\", \"Description\": \"Report sites if the probability that there is a polymorphism\\n                   at the site is greater than N.  default: 0.0.  Note that post-\\n                   filtering is generally recommended over the use of this parameter.\"}, {\"Parameter\": \"--strict-vcf\", \"Description\": \"Generate strict VCF format (FORMAT/GQ will be an int)\"}, {\"Parameter\": \"-T --theta N\", \"Description\": \"The expected mutation rate or pairwise nucleotide diversity\\n                   among the population under analysis.  This serves as the\\n                   single parameter to the Ewens Sampling Formula prior model\\n                   default: 0.001\"}, {\"Parameter\": \"-p --ploidy N\", \"Description\": \"Sets the default ploidy for the analysis to N.  default: 2\"}, {\"Parameter\": \"-J --pooled-discrete\", \"Description\": \"Assume that samples result from pooled sequencing.\\n                   Model pooled samples using discrete genotypes across pools.\\n                   When using this flag, set --ploidy to the number of\\n                   alleles in each sample or use the --cnv-map to define\\n                   per-sample ploidy.\"}, {\"Parameter\": \"-K --pooled-continuous\", \"Description\": \"Output all alleles which pass input filters, regardles of\\n                   genotyping outcome or model.\"}, {\"Parameter\": \"-Z --use-reference-allele\", \"Description\": \"This flag includes the reference allele in the analysis as\\n                   if it is another sample from the same population.\"}, {\"Parameter\": \"--reference-quality MQ,BQ\", \"Description\": \"Assign mapping quality of MQ to the reference allele at each\\n                   site and base quality of BQ.  default: 100,60\"}, {\"Parameter\": \"-n --use-best-n-alleles N\", \"Description\": \"Evaluate only the best N SNP alleles, ranked by sum of\\n                   supporting quality scores.  (Set to 0 to use all; default: all)\"}, {\"Parameter\": \"-E --max-complex-gap N\", \"Description\": \"Allow haplotype calls with contiguous embedded matches of up\\n                   to this length. Set N=-1 to disable clumping. (default: 3)\"}, {\"Parameter\": \"--haplotype-length N\", \"Description\": \"Allow haplotype calls with contiguous embedded matches of up\\n                   to this length. Set N=-1 to disable clumping. (default: 3)\"}, {\"Parameter\": \"--min-repeat-size N\", \"Description\": \"When assembling observations across repeats, require the total repeat\\n                   length at least this many bp.  (default: 5)\"}, {\"Parameter\": \"--min-repeat-entropy N\", \"Description\": \"To detect interrupted repeats, build across sequence until it has\\n                   entropy > N bits per bp. Set to 0 to turn off. (default: 1)\"}, {\"Parameter\": \"--no-partial-observations\", \"Description\": \"Exclude observations which do not fully span the dynamically-determined\\n                   detection window.  (default, use all observations, dividing partial\\n                   support across matching haplotypes when generating haplotypes.)\"}, {\"Parameter\": \"-I --throw-away-snp-obs\", \"Description\": \"Remove SNP observations from input.\"}, {\"Parameter\": \"-i --throw-away-indels-obs\", \"Description\": \"Remove indel observations from input.\"}, {\"Parameter\": \"-X --throw-away-mnp-obs\", \"Description\": \"Remove MNP observations from input.\"}, {\"Parameter\": \"-u --throw-away-complex-obs\", \"Description\": \"Remove complex allele observations from input.\"}, {\"Parameter\": \"-O --dont-left-align-indels\", \"Description\": \"Turn off left-alignment of indels, which is enabled by default.\"}, {\"Parameter\": \"-4 --use-duplicate-reads\", \"Description\": \"Include duplicate-marked alignments in the analysis.\\n                   default: exclude duplicates marked as such in alignments\"}, {\"Parameter\": \"-m --min-mapping-quality Q\", \"Description\": \"Exclude alignments from analysis if they have a mapping\\n                   quality less than Q.  default: 1\"}, {\"Parameter\": \"-q --min-base-quality Q\", \"Description\": \"Exclude alleles from analysis if their supporting base\\n                   quality is less than Q.  default: 0\"}, {\"Parameter\": \"-R --min-supporting-allele-qsum Q\", \"Description\": \"Consider any allele in which the sum of qualities of supporting\\n                   observations is at least Q.  default: 0\"}, {\"Parameter\": \"-Y --min-supporting-mapping-qsum Q\", \"Description\": \"Consider any allele in which and the sum of mapping qualities of\\n                   supporting reads is at least Q.  default: 0\"}, {\"Parameter\": \"-Q --mismatch-base-quality-threshold Q\", \"Description\": \"Count mismatches toward --read-mismatch-limit if the base\\n                   quality of the mismatch is >= Q.  default: 10\"}, {\"Parameter\": \"-U --read-mismatch-limit N\", \"Description\": \"Exclude reads with more than N mismatches where each mismatch\\n                   has base quality >= mismatch-base-quality-threshold.\\n                   default: ~unbounded\"}, {\"Parameter\": \"-z --read-max-mismatch-fraction N\", \"Description\": \"Exclude reads with more than N [0,1] fraction of mismatches where\\n                   each mismatch has base quality >= mismatch-base-quality-threshold\\n                   default: 1.0\"}, {\"Parameter\": \"-$ --read-snp-limit N\", \"Description\": \"Exclude reads with more than N base mismatches, ignoring gaps\\n                   with quality >= mismatch-base-quality-threshold.\\n                   default: ~unbounded\"}, {\"Parameter\": \"-e --read-indel-limit N\", \"Description\": \"Exclude reads with more than N separate gaps.\\n                   default: ~unbounded\"}, {\"Parameter\": \"-0 --standard-filters\", \"Description\": \"Use stringent input base and mapping quality filters\\n                   Equivalent to -m 30 -q 20 -R 0 -S 0\"}, {\"Parameter\": \"-F --min-alternate-fraction N\", \"Description\": \"Require at least this fraction of observations supporting\\n                   an alternate allele within a single individual in the\\n                   in order to evaluate the position.  default: 0.05\"}, {\"Parameter\": \"-C --min-alternate-count N\", \"Description\": \"Require at least this count of observations supporting\\n                   an alternate allele within a single individual in order\\n                   to evaluate the position.  default: 2\"}, {\"Parameter\": \"-3 --min-alternate-qsum N\", \"Description\": \"Require at least this sum of quality of observations supporting\\n                   an alternate allele within a single individual in order\\n                   to evaluate the position.  default: 0\"}, {\"Parameter\": \"-G --min-alternate-total N\", \"Description\": \"Require at least this count of observations supporting\\n                   an alternate allele within the total population in order\\n                   to use the allele in analysis.  default: 1\"}, {\"Parameter\": \"--min-coverage N\", \"Description\": \"Require at least this coverage to process a site. default: 0\"}, {\"Parameter\": \"--limit-coverage N\", \"Description\": \"Downsample per-sample coverage to this level if greater than this coverage.\\n                   default: no limit\"}, {\"Parameter\": \"-g --skip-coverage N\", \"Description\": \"Skip processing of alignments overlapping positions with coverage >N.\\n                   This filters sites above this coverage, but will also reduce data nearby.\\n                   default: no limit\"}, {\"Parameter\": \"--trim-complex-tail\", \"Description\": \"Trim complex tails.\"}, {\"Parameter\": \"-k --no-population-priors\", \"Description\": \"Equivalent to --pooled-discrete --hwe-priors-off and removal of\\n                   Ewens Sampling Formula component of priors.\"}, {\"Parameter\": \"-w --hwe-priors-off\", \"Description\": \"Disable estimation of the probability of the combination\\n                   arising under HWE given the allele frequency as estimated\\n                   by observation frequency.\"}, {\"Parameter\": \"-V --binomial-obs-priors-off\", \"Description\": \"Disable incorporation of prior expectations about observations.\\n                   Uses read placement probability, strand balance probability,\\n                   and read position (5'-3') probability.\"}, {\"Parameter\": \"-a --allele-balance-priors-off\", \"Description\": \"Disable use of aggregate probability of observation balance between alleles\\n                   as a component of the priors.\"}, {\"Parameter\": \"--observation-bias FILE\", \"Description\": \"Read length-dependent allele observation biases from FILE.\\n                   The format is [length] [alignment efficiency relative to reference]\\n                   where the efficiency is 1 if there is no relative observation bias.\"}, {\"Parameter\": \"--base-quality-cap Q\", \"Description\": \"Limit estimated observation quality by capping base quality at Q.\"}, {\"Parameter\": \"--prob-contamination F\", \"Description\": \"An estimate of contamination to use for all samples.  default: 10e-9\"}, {\"Parameter\": \"--legacy-gls\", \"Description\": \"Use legacy (polybayes equivalent) genotype likelihood calculations\"}, {\"Parameter\": \"--contamination-estimates FILE\", \"Description\": \"A file containing per-sample estimates of contamination, such as\\n                   those generated by VerifyBamID.  The format should be:\\n                       sample p(read=R|genotype=AR) p(read=A|genotype=AA)\\n                   Sample '*' can be used to set default contamination estimates.\"}, {\"Parameter\": \"--report-genotype-likelihood-max\", \"Description\": \"Report genotypes using the maximum-likelihood estimate provided\\n                   from genotype likelihoods.\"}, {\"Parameter\": \"-B --genotyping-max-iterations N\", \"Description\": \"Iterate no more than N times during genotyping step. default: 1000.\"}, {\"Parameter\": \"--genotyping-max-banddepth N\", \"Description\": \"Integrate no deeper than the Nth best genotype by likelihood when\\n                   genotyping. default: 6.\"}, {\"Parameter\": \"-W --posterior-integration-limits N,M\", \"Description\": \"Integrate all genotype combinations in our posterior space\\n                   which include no more than N samples with their Mth best\\n                   data likelihood. default: 1,3.\"}, {\"Parameter\": \"-N --exclude-unobserved-genotypes\", \"Description\": \"Skip sample genotypings for which the sample has no supporting reads.\"}, {\"Parameter\": \"-S --genotype-variant-threshold N\", \"Description\": \"Limit posterior integration to samples where the second-best\\n                   genotype likelihood is no more than log(N) from the highest\\n                   genotype likelihood for the sample.  default: ~unbounded\"}, {\"Parameter\": \"-j --use-mapping-quality\", \"Description\": \"Use mapping quality of alleles when calculating data likelihoods.\"}, {\"Parameter\": \"-H --harmonic-indel-quality\", \"Description\": \"Use a weighted sum of base qualities around an indel, scaled by the\\n                   distance from the indel.  By default use a minimum BQ in flanking sequence.\"}, {\"Parameter\": \"-D --read-dependence-factor N\", \"Description\": \"Incorporate non-independence of reads by scaling successive\\n                   observations by this factor during data likelihood\\n                   calculations.  default: 0.9\"}, {\"Parameter\": \"-= --genotype-qualities\", \"Description\": \"Calculate the marginal probability of genotypes and report as GQ in\\n                   each sample field in the VCF output.\"}, {\"Parameter\": \"-d --debug\", \"Description\": \"Print debugging output.\"}, {\"Parameter\": \"-dd\", \"Description\": \"Print more verbose debugging output (requires \\\"make DEBUG\\\")\"}]}",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:442",
+        "label": "1.3.6",
+        "shape": "dot",
+        "color": "#97c2fc",
+        "size": 20,
+        "neo4j_labels": [
+            "Version"
+        ]
+    },
+    {
+        "output": [],
+        "input": [],
+        "publication": "[]",
+        "name": "FreeBayes",
+        "topic": [
+            "Genomics",
+            "Genetic variation",
+            "Rare diseases"
+        ],
+        "description": "Bayesian genetic variant detector designed to find small polymorphisms, specifically SNPs, indels, multi-nucleotide polymorphisms, and complex events (composite insertion and substitution events) smaller than the length of a short-read sequencing alignment.",
+        "links": [],
+        "language": [
+            "C++",
+            "C"
+        ],
+        "operation": [
+            "Variant calling",
+            "Statistical calculation"
+        ],
+        "operatingSystem": [
+            "Linux",
+            "Mac"
+        ],
+        "toolType": [
+            "Command-line tool"
+        ],
+        "biotoolID": "freebayes",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:439",
+        "label": "FreeBayes",
+        "shape": "dot",
+        "color": "#fb7e81",
+        "size": 30,
+        "neo4j_labels": [
+            "Tool"
+        ]
+    },
+    {
+        "versionID": "picard_tools3.4.0",
+        "Parameter": "{\"Command\": [{\"Parameter\": \"-h\", \"Description\": \"help\"}]}",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:565",
+        "label": "3.4.0",
+        "shape": "dot",
+        "color": "#97c2fc",
+        "size": 20,
+        "neo4j_labels": [
+            "Version"
+        ]
+    },
+    {
+        "versionID": "cnvkit0.9.12",
+        "Parameter": "{\"Command\": [{\"Parameter\": \"batch\", \"Description\": \"Run the complete CNVkit pipeline on one or more BAM files.\"}, {\"Parameter\": \"target\", \"Description\": \"Transform bait intervals into targets more suitable for CNVkit.\"}, {\"Parameter\": \"access\", \"Description\": \"List the locations of accessible sequence regions in a FASTA file.\"}, {\"Parameter\": \"antitarget\", \"Description\": \"Derive off-target (\\\"antitarget\\\") bins from target regions.\"}, {\"Parameter\": \"autobin\", \"Description\": \"Quickly calculate reasonable bin sizes from BAM read counts.\"}, {\"Parameter\": \"coverage\", \"Description\": \"Calculate coverage in the given regions from BAM read depths.\"}, {\"Parameter\": \"reference\", \"Description\": \"Compile a coverage reference from the given files (normal samples).\"}, {\"Parameter\": \"fix\", \"Description\": \"Combine target and antitarget coverages and correct for biases. Adjust raw coverage data according to the given reference, correct potential biases and re-center.\"}, {\"Parameter\": \"segment\", \"Description\": \"Infer copy number segments from the given coverage table.\"}, {\"Parameter\": \"call\", \"Description\": \"Call copy number variants from segmented log2 ratios.\"}, {\"Parameter\": \"diagram\", \"Description\": \"Draw copy number (log2 coverages, segments) on chromosomes as a diagram. If both the raw probes and segments are given, show them side-by-side on each chromosome (segments on the left side, probes on the right side).\"}, {\"Parameter\": \"scatter\", \"Description\": \"Plot probe log2 coverages and segmentation calls together.\"}, {\"Parameter\": \"heatmap\", \"Description\": \"Plot copy number for multiple samples as a heatmap.\"}, {\"Parameter\": \"breaks\", \"Description\": \"List the targeted genes in which a copy number breakpoint occurs.\"}, {\"Parameter\": \"genemetrics\", \"Description\": \"Identify targeted genes with copy number gain or loss.\"}, {\"Parameter\": \"sex\", \"Description\": \"Guess samples' sex from the relative coverage of chromosomes X and Y.\"}, {\"Parameter\": \"metrics\", \"Description\": \"Compute coverage deviations and other metrics for self-evaluation.\"}, {\"Parameter\": \"segmetrics\", \"Description\": \"Compute segment-level metrics from bin-level log2 ratios.\"}, {\"Parameter\": \"bintest\", \"Description\": \"Test for single-bin copy number alterations.\"}, {\"Parameter\": \"import-picard\", \"Description\": \"Convert Picard CalculateHsMetrics tabular output to CNVkit .cnn files. The input file is generated by the PER_TARGET_COVERAGE option in the CalculateHsMetrics script in Picard tools. If 'antitarget' is in the input filename, the generated output filename will have the suffix '.antitargetcoverage.cnn', otherwise '.targetcoverage.cnn'.\"}, {\"Parameter\": \"import-seg\", \"Description\": \"Convert a SEG file to CNVkit .cns files.\"}, {\"Parameter\": \"import-theta\", \"Description\": \"Convert THetA output to a BED-like, CNVkit-like tabular format. Equivalently, use the THetA results file to convert CNVkit .cns segments to integer copy number calls.\"}, {\"Parameter\": \"import-rna\", \"Description\": \"Convert a cohort of per-gene log2 ratios to CNVkit .cnr format.\"}, {\"Parameter\": \"export\", \"Description\": \"Convert CNVkit output files to another format.\"}, {\"Parameter\": \"version\", \"Description\": \"Display this program's version.\"}, {\"Parameter\": \"-h, --help\", \"Description\": \"show this help message and exit\"}]}",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:66",
+        "label": "0.9.12",
+        "shape": "dot",
+        "color": "#97c2fc",
+        "size": 20,
+        "neo4j_labels": [
+            "Version"
+        ]
+    },
+    {
+        "output": [],
+        "input": [],
+        "publication": "[{\"doi\": \"10.1371/journal.pcbi.1004873\", \"title\": \"\", \"abstract\": \"\"}]",
+        "name": "CNVkit",
+        "topic": [
+            "DNA structural variation"
+        ],
+        "description": "CNVkit is a software toolkit to infer and visualize copy number from targeted DNA sequencing data.",
+        "links": [],
+        "language": [
+            "Python"
+        ],
+        "operation": [
+            "Variant calling"
+        ],
+        "operatingSystem": [
+            "Mac"
+        ],
+        "toolType": [
+            "Library"
+        ],
+        "biotoolID": "cnvkit",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:63",
+        "label": "CNVkit",
+        "shape": "dot",
+        "color": "#fb7e81",
+        "size": 30,
+        "neo4j_labels": [
+            "Tool"
+        ]
+    },
+    {
+        "versionID": "manta_sv1.4.0",
+        "Parameter": "{\"Command\": [{\"Parameter\": \"--version\", \"Description\": \"show program's version number and exit\"}, {\"Parameter\": \"-h, --help\", \"Description\": \"show this help message and exit\"}, {\"Parameter\": \"--config=FILE\", \"Description\": \"provide a configuration file to override defaults in global config file (/home/houyufei/miniconda3/envs/tmp_manta_7feace79/share/manta-1.4.0-1/bin/configManta.py .ini)\"}, {\"Parameter\": \"--allHelp\", \"Description\": \"show all extended/hidden options\"}, {\"Parameter\": \"--bam=FILE, --normalBam=FILE\", \"Description\": \"Normal sample BAM or CRAM file. May be specified more once, multiple inputs will be treated as each BAM file representing a different sample. [optional] (no default)\"}, {\"Parameter\": \"--tumorBam=FILE, --tumourBam=FILE\", \"Description\": \"Tumor sample BAM or CRAM file. Only up to one tumor bam file accepted. [optional] (no default)\"}, {\"Parameter\": \"--exome\", \"Description\": \"Set options for WES input: turn off depth filters\"}, {\"Parameter\": \"--rna\", \"Description\": \"Set options for RNA-Seq input. Must specify exactly one bam input file\"}, {\"Parameter\": \"--unstrandedRNA\", \"Description\": \"Set if RNA-Seq input is unstranded: Allows splice- junctions on either strand\"}, {\"Parameter\": \"--referenceFasta=FILE\", \"Description\": \"samtools-indexed reference fasta file [required]\"}, {\"Parameter\": \"--runDir=DIR\", \"Description\": \"Name of directory to be created where all workflow scripts and output will be written. Each analysis requires a separate directory. (default: MantaWorkflow)\"}, {\"Parameter\": \"--callRegions=FILE\", \"Description\": \"Optionally provide a bgzip-compressed/tabix-indexed BED file containing the set of regions to call. No VCF output will be provided outside of these regions. The full genome will still be used to estimate statistics from the input (such as expected fragment size distribution). Only one BED file may be specified. (default: call the entire genome)\"}]}",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:62",
+        "label": "1.4.0",
+        "shape": "dot",
+        "color": "#97c2fc",
+        "size": 20,
+        "neo4j_labels": [
+            "Version"
+        ]
+    },
+    {
+        "versionID": "freebayes1.3.10",
+        "Parameter": "{\"Command\": [{\"Parameter\": \"-h --help\", \"Description\": \"For a complete description of options.\"}, {\"Parameter\": \"--version\", \"Description\": \"Prints the release number and the git commit id.\"}, {\"Parameter\": \"-b --bam FILE\", \"Description\": \"Add FILE to the set of BAM files to be analyzed.\"}, {\"Parameter\": \"-L --bam-list FILE\", \"Description\": \"A file containing a list of BAM files to be analyzed.\"}, {\"Parameter\": \"-c --stdin\", \"Description\": \"Read BAM input on stdin.\"}, {\"Parameter\": \"-f --fasta-reference FILE\", \"Description\": \"Use FILE as the reference sequence for analysis. An index file (FILE.fai) will be created if none exists. If neither --targets nor --region are specified, FreeBayes will analyze every position in this reference.\"}, {\"Parameter\": \"-t --targets FILE\", \"Description\": \"Limit analysis to targets listed in the BED-format FILE.\"}, {\"Parameter\": \"-r --region <chrom>:<start_position>-<end_position>\", \"Description\": \"Limit analysis to the specified region, 0-base coordinates, end_position not included (same as BED format). Either '-' or '..' maybe used as a separator.\"}, {\"Parameter\": \"-s --samples FILE\", \"Description\": \"Limit analysis to samples listed (one per line) in the FILE. By default FreeBayes will analyze all samples in its input BAM files.\"}, {\"Parameter\": \"--populations FILE\", \"Description\": \"Each line of FILE should list a sample and a population which it is part of. The population-based bayesian inference model will then be partitioned on the basis of the populations.\"}, {\"Parameter\": \"-A --cnv-map FILE\", \"Description\": \"Read a copy number map from the BED file FILE, which has either a sample-level ploidy: sample_name copy_number or a region-specific format: seq_name start end sample_name copy_number ... for each region in each sample which does not have the default copy number as set by --ploidy. These fields can be delimited by space or tab.\"}, {\"Parameter\": \"-v --vcf FILE\", \"Description\": \"Output VCF-format results to FILE. (default: stdout)\"}, {\"Parameter\": \"--gvcf\", \"Description\": \"Write gVCF output, which indicates coverage in uncalled regions.\"}, {\"Parameter\": \"--gvcf-chunk NUM\", \"Description\": \"When writing gVCF output emit a record for every NUM bases.\"}, {\"Parameter\": \"-& --gvcf-dont-use-chunk BOOL\", \"Description\": \"When writing the gVCF output emit a record for all bases if set to \\\"true\\\" , will also route an int to --gvcf-chunk similar to --output-mode EMIT_ALL_SITES from GATK\"}, {\"Parameter\": \"-@ --variant-input VCF\", \"Description\": \"Use variants reported in VCF file as input to the algorithm. Variants in this file will included in the output even if there is not enough support in the data to pass input filters.\"}, {\"Parameter\": \"-l --only-use-input-alleles\", \"Description\": \"Only provide variant calls and genotype likelihoods for sites and alleles which are provided in the VCF input, and provide output in the VCF for all input alleles, not just those which have support in the data.\"}, {\"Parameter\": \"--haplotype-basis-alleles VCF\", \"Description\": \"When specified, only variant alleles provided in this input VCF will be used for the construction of complex or haplotype alleles.\"}, {\"Parameter\": \"--report-all-haplotype-alleles\", \"Description\": \"At sites where genotypes are made over haplotype alleles, provide information about all alleles in output, not only those which are called.\"}, {\"Parameter\": \"--report-monomorphic\", \"Description\": \"Report even loci which appear to be monomorphic, and report all considered alleles, even those which are not in called genotypes. Loci which do not have any potential alternates have '.' for ALT.\"}, {\"Parameter\": \"-P --pvar N\", \"Description\": \"Report sites if the probability that there is a polymorphism at the site is greater than N.  default: 0.0.  Note that post- filtering is generally recommended over the use of this parameter.\"}, {\"Parameter\": \"--strict-vcf\", \"Description\": \"Generate strict VCF format (FORMAT/GQ will be an int)\"}, {\"Parameter\": \"-T --theta N\", \"Description\": \"The expected mutation rate or pairwise nucleotide diversity among the population under analysis. This serves as the single parameter to the Ewens Sampling Formula prior model default: 0.001\"}, {\"Parameter\": \"-p --ploidy N\", \"Description\": \"Sets the default ploidy for the analysis to N.  default: 2\"}, {\"Parameter\": \"-J --pooled-discrete\", \"Description\": \"Assume that samples result from pooled sequencing. Model pooled samples using discrete genotypes across pools. When using this flag, set --ploidy to the number of alleles in each sample or use the --cnv-map to define per-sample ploidy.\"}, {\"Parameter\": \"-K --pooled-continuous\", \"Description\": \"Output all alleles which pass input filters, regardles of genotyping outcome or model.\"}, {\"Parameter\": \"-Z --use-reference-allele\", \"Description\": \"This flag includes the reference allele in the analysis as if it is another sample from the same population.\"}, {\"Parameter\": \"--reference-quality MQ,BQ\", \"Description\": \"Assign mapping quality of MQ to the reference allele at each site and base quality of BQ.  default: 100,60\"}, {\"Parameter\": \"-n --use-best-n-alleles N\", \"Description\": \"Evaluate only the best N SNP alleles, ranked by sum of supporting quality scores.  (Set to 0 to use all; default: all)\"}, {\"Parameter\": \"-E --max-complex-gap N\", \"Description\": \"Allow haplotype calls with contiguous embedded matches of up to this length. Set N=-1 to disable clumping. (default: 3)\"}, {\"Parameter\": \"--haplotype-length N\", \"Description\": \"Allow haplotype calls with contiguous embedded matches of up to this length. Set N=-1 to disable clumping. (default: 3)\"}, {\"Parameter\": \"--min-repeat-size N\", \"Description\": \"When assembling observations across repeats, require the total repeat length at least this many bp.  (default: 5)\"}, {\"Parameter\": \"--min-repeat-entropy N\", \"Description\": \"To detect interrupted repeats, build across sequence until it has entropy > N bits per bp. Set to 0 to turn off. (default: 1)\"}, {\"Parameter\": \"--no-partial-observations\", \"Description\": \"Exclude observations which do not fully span the dynamically-determined detection window.  (default, use all observations, dividing partial support across matching haplotypes when generating haplotypes.)\"}, {\"Parameter\": \"-I --throw-away-snp-obs\", \"Description\": \"Remove SNP observations from input.\"}, {\"Parameter\": \"-i --throw-away-indels-obs\", \"Description\": \"Remove indel observations from input.\"}, {\"Parameter\": \"-X --throw-away-mnp-obs\", \"Description\": \"Remove MNP observations from input.\"}, {\"Parameter\": \"-u --throw-away-complex-obs\", \"Description\": \"Remove complex allele observations from input.\"}, {\"Parameter\": \"-O --dont-left-align-indels\", \"Description\": \"Turn off left-alignment of indels, which is enabled by default.\"}, {\"Parameter\": \"-4 --use-duplicate-reads\", \"Description\": \"Include duplicate-marked alignments in the analysis. default: exclude duplicates marked as such in alignments\"}, {\"Parameter\": \"-m --min-mapping-quality Q\", \"Description\": \"Exclude alignments from analysis if they have a mapping quality less than Q.  default: 1\"}, {\"Parameter\": \"-q --min-base-quality Q\", \"Description\": \"Exclude alleles from analysis if their supporting base quality is less than Q.  default: 0\"}, {\"Parameter\": \"-R --min-supporting-allele-qsum Q\", \"Description\": \"Consider any allele in which the sum of qualities of supporting observations is at least Q.  default: 0\"}, {\"Parameter\": \"-Y --min-supporting-mapping-qsum Q\", \"Description\": \"Consider any allele in which and the sum of mapping qualities of supporting reads is at least Q.  default: 0\"}, {\"Parameter\": \"-Q --mismatch-base-quality-threshold Q\", \"Description\": \"Count mismatches toward --read-mismatch-limit if the base quality of the mismatch is >= Q.  default: 10\"}, {\"Parameter\": \"-U --read-mismatch-limit N\", \"Description\": \"Exclude reads with more than N mismatches where each mismatch has base quality >= mismatch-base-quality-threshold. default: ~unbounded\"}, {\"Parameter\": \"-z --read-max-mismatch-fraction N\", \"Description\": \"Exclude reads with more than N [0,1] fraction of mismatches where each mismatch has base quality >= mismatch-base-quality-threshold default: 1.0\"}, {\"Parameter\": \"-$ --read-snp-limit N\", \"Description\": \"Exclude reads with more than N base mismatches, ignoring gaps with quality >= mismatch-base-quality-threshold. default: ~unbounded\"}, {\"Parameter\": \"-e --read-indel-limit N\", \"Description\": \"Exclude reads with more than N separate gaps. default: ~unbounded\"}, {\"Parameter\": \"-0 --standard-filters\", \"Description\": \"Use stringent input base and mapping quality filters Equivalent to -m 30 -q 20 -R 0 -S 0\"}, {\"Parameter\": \"-F --min-alternate-fraction N\", \"Description\": \"Require at least this fraction of observations supporting an alternate allele within a single individual in the in order to evaluate the position.  default: 0.05\"}, {\"Parameter\": \"-C --min-alternate-count N\", \"Description\": \"Require at least this count of observations supporting an alternate allele within a single individual in order to evaluate the position.  default: 2\"}, {\"Parameter\": \"-3 --min-alternate-qsum N\", \"Description\": \"Require at least this sum of quality of observations supporting an alternate allele within a single individual in order to evaluate the position.  default: 0\"}, {\"Parameter\": \"-G --min-alternate-total N\", \"Description\": \"Require at least this count of observations supporting an alternate allele within the total population in order to use the allele in analysis.  default: 1\"}, {\"Parameter\": \"--min-coverage N\", \"Description\": \"Require at least this coverage to process a site. default: 0\"}, {\"Parameter\": \"--limit-coverage N\", \"Description\": \"Downsample per-sample coverage to this level if greater than this coverage. default: no limit\"}, {\"Parameter\": \"-g --skip-coverage N\", \"Description\": \"Skip processing of alignments overlapping positions with coverage >N. This filters sites above this coverage, but will also reduce data nearby. default: no limit\"}, {\"Parameter\": \"--trim-complex-tail\", \"Description\": \"Trim complex tails.\"}, {\"Parameter\": \"-k --no-population-priors\", \"Description\": \"Equivalent to --pooled-discrete --hwe-priors-off and removal of Ewens Sampling Formula component of priors.\"}, {\"Parameter\": \"-w --hwe-priors-off\", \"Description\": \"Disable estimation of the probability of the combination arising under HWE given the allele frequency as estimated by observation frequency.\"}, {\"Parameter\": \"-V --binomial-obs-priors-off\", \"Description\": \"Disable incorporation of prior expectations about observations. Uses read placement probability, strand balance probability, and read position (5'-3') probability.\"}, {\"Parameter\": \"-a --allele-balance-priors-off\", \"Description\": \"Disable use of aggregate probability of observation balance between alleles as a component of the priors.\"}, {\"Parameter\": \"--observation-bias FILE\", \"Description\": \"Read length-dependent allele observation biases from FILE. The format is [length] [alignment efficiency relative to reference] where the efficiency is 1 if there is no relative observation bias.\"}, {\"Parameter\": \"--base-quality-cap Q\", \"Description\": \"Limit estimated observation quality by capping base quality at Q.\"}, {\"Parameter\": \"--prob-contamination F\", \"Description\": \"An estimate of contamination to use for all samples.  default: 10e-9\"}, {\"Parameter\": \"--legacy-gls\", \"Description\": \"Use legacy (polybayes equivalent) genotype likelihood calculations\"}, {\"Parameter\": \"--contamination-estimates FILE\", \"Description\": \"A file containing per-sample estimates of contamination, such as those generated by VerifyBamID. The format should be: sample p(read=R|genotype=AR) p(read=A|genotype=AA) Sample '*' can be used to set default contamination estimates.\"}, {\"Parameter\": \"--report-genotype-likelihood-max\", \"Description\": \"Report genotypes using the maximum-likelihood estimate provided from genotype likelihoods.\"}, {\"Parameter\": \"-B --genotyping-max-iterations N\", \"Description\": \"Iterate no more than N times during genotyping step. default: 1000.\"}, {\"Parameter\": \"--genotyping-max-banddepth N\", \"Description\": \"Integrate no deeper than the Nth best genotype by likelihood when genotyping. default: 6.\"}, {\"Parameter\": \"-W --posterior-integration-limits N,M\", \"Description\": \"Integrate all genotype combinations in our posterior space which include no more than N samples with their Mth best data likelihood. default: 1,3.\"}, {\"Parameter\": \"-N --exclude-unobserved-genotypes\", \"Description\": \"Skip sample genotypings for which the sample has no supporting reads.\"}, {\"Parameter\": \"-S --genotype-variant-threshold N\", \"Description\": \"Limit posterior integration to samples where the second-best genotype likelihood is no more than log(N) from the highest genotype likelihood for the sample.  default: ~unbounded\"}, {\"Parameter\": \"-j --use-mapping-quality\", \"Description\": \"Use mapping quality of alleles when calculating data likelihoods.\"}, {\"Parameter\": \"-H --harmonic-indel-quality\", \"Description\": \"Use a weighted sum of base qualities around an indel, scaled by the distance from the indel.  By default use a minimum BQ in flanking sequence.\"}, {\"Parameter\": \"-D --read-dependence-factor N\", \"Description\": \"Incorporate non-independence of reads by scaling successive observations by this factor during data likelihood calculations.  default: 0.9\"}, {\"Parameter\": \"-= --genotype-qualities\", \"Description\": \"Calculate the marginal probability of genotypes and report as GQ in each sample field in the VCF output.\"}, {\"Parameter\": \"-d --debug\", \"Description\": \"Print debugging output.\"}, {\"Parameter\": \"-dd\", \"Description\": \"Print more verbose debugging output (requires \\\"make DEBUG\\\")\"}]}",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:440",
+        "label": "1.3.10",
+        "shape": "dot",
+        "color": "#97c2fc",
+        "size": 20,
+        "neo4j_labels": [
+            "Version"
+        ]
+    },
+    {
+        "versionID": "Paragraph2.2a",
+        "Parameter": "{\"Command\": [{\"Parameter\": \"--bad-align-frac\", \"Description\": \"Fraction of read that needs to be mapped in order for it to be used.\"}, {\"Parameter\": \"--bad-align-nonuniq\", \"Description\": \"Remove reads that are not mapped uniquely.\"}, {\"Parameter\": \"--bad-align-uniq-kmer-len\", \"Description\": \"Kmer length for uniqueness check during read filtering.\"}, {\"Parameter\": \"-b [ --bam ]\", \"Description\": \"Input BAM file(s) for read extraction. We align all reads to all graphs.\"}, {\"Parameter\": \"--graph-sequence-matching\", \"Description\": \"Enables smith waterman graph alignment\"}, {\"Parameter\": \"-g [ --graph-spec ]\", \"Description\": \"JSON file(s) describing the graph(s)\"}, {\"Parameter\": \"-z [ --gzip-output ]\", \"Description\": \"gzip-compress output files. If -O is used, output file names are appended with .gz\"}, {\"Parameter\": \"-h [ --help ]\", \"Description\": \"produce help message and exit\"}, {\"Parameter\": \"--help-defaults\", \"Description\": \"produce tab-delimited list of command line options and their default values\"}, {\"Parameter\": \"--help-md\", \"Description\": \"produce help message pre-formatted as a markdown file section and exit\"}, {\"Parameter\": \"--klib-sequence-matching\", \"Description\": \"Use klib smith-waterman aligner.\"}, {\"Parameter\": \"--kmer-sequence-matching\", \"Description\": \"Use kmer aligner.\"}, {\"Parameter\": \"--log-async\", \"Description\": \"Enable / disable async logging.\"}, {\"Parameter\": \"--log-file\", \"Description\": \"Log to a file instead of stderr.\"}, {\"Parameter\": \"--log-level\", \"Description\": \"Set log level (error, warning, info).\"}, {\"Parameter\": \"-M [ --max-reads-per-event ]\", \"Description\": \"Maximum number of reads to process for a single event.\"}, {\"Parameter\": \"-a [ --output-alignments ]\", \"Description\": \"Output alignments for every read (large).\"}, {\"Parameter\": \"--output-detailed-read-counts\", \"Description\": \"Output detailed read counts not just for paths but also for each node/edge on the paths.\"}, {\"Parameter\": \"-E [ --output-everything ]\", \"Description\": \"Write all information we have into JSON. (=enable all --output-* above)\"}, {\"Parameter\": \"-o [ --output-file ]\", \"Description\": \"Output file name. Will output to stdout if '-' or neither of output-file or output-folder provided.\"}, {\"Parameter\": \"-A [ --output-filtered-alignments ]\", \"Description\": \"Output alignments for every read even when it was filtered (larger).\"}, {\"Parameter\": \"-O [ --output-folder ]\", \"Description\": \"Output folder path. paragraph will attempt to create the folder but not the entire path. Will output to stdout if neither of output-file or output-folder provided. If specified, paragraph will produce one output file for each input file bearing the same name.\"}, {\"Parameter\": \"--output-node-coverage\", \"Description\": \"Output coverage for nodes\"}, {\"Parameter\": \"--output-path-coverage\", \"Description\": \"Output coverage for paths\"}, {\"Parameter\": \"--output-read-haplotypes\", \"Description\": \"Output graph haplotypes supported by reads.\"}, {\"Parameter\": \"-v [ --output-variants ]\", \"Description\": \"Output variants not present in the graph.\"}, {\"Parameter\": \"--path-sequence-matching\", \"Description\": \"Enable path seeding aligner\"}, {\"Parameter\": \"-r [ --reference ]\", \"Description\": \"Reference genome fasta file.\"}, {\"Parameter\": \"--response-file\", \"Description\": \"file with more command line arguments\"}, {\"Parameter\": \"-T [ --target-regions ]\", \"Description\": \"Comma-separated list of target regions, e.g. chr1:1-20,chr2:2-40. This overrides the target regions in the graph spec.\"}, {\"Parameter\": \"--threads\", \"Description\": \"Number of threads to use for parallel alignment.\"}, {\"Parameter\": \"--validate-alignments\", \"Description\": \"Use information in the input bam read names to collect statistics about the accuracy of alignments. Requires bam file produced with simulate-reads.sh\"}, {\"Parameter\": \"--variant-min-frac\", \"Description\": \"Minimum fraction of reads required to report a variant.\"}, {\"Parameter\": \"--variant-min-reads\", \"Description\": \"Minimum number of reads required to report a variant.\"}, {\"Parameter\": \"-v [ --version ]\", \"Description\": \"print program version information\"}]}",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:265",
+        "label": "2.2a",
+        "shape": "dot",
+        "color": "#97c2fc",
+        "size": 20,
+        "neo4j_labels": [
+            "Version"
+        ]
+    },
+    {
+        "versionID": "oakvar2.12.25",
+        "Parameter": "{\"Command\": [{\"Parameter\": \"-h\", \"Description\": \"show this help message and exit\"}, {\"Parameter\": \"--help\", \"Description\": \"show this help message and exit\"}, {\"Parameter\": \"run\", \"Description\": \"Run a job\"}, {\"Parameter\": \"report\", \"Description\": \"Generate a report from a job\"}, {\"Parameter\": \"module\", \"Description\": \"Manages OakVar modules\"}, {\"Parameter\": \"gui\", \"Description\": \"Start the GUI\"}, {\"Parameter\": \"config\", \"Description\": \"Manages OakVar configurations\"}, {\"Parameter\": \"new\", \"Description\": \"Create OakVar example input files and module templates\"}, {\"Parameter\": \"store\", \"Description\": \"Publish modules to the store\"}, {\"Parameter\": \"util\", \"Description\": \"OakVar utilities\"}, {\"Parameter\": \"test\", \"Description\": \"Run tests on OakVar modules. `def test` should be defined in tested modules.\"}, {\"Parameter\": \"version\", \"Description\": \"Show version\"}, {\"Parameter\": \"issue\", \"Description\": \"Send an issue report\"}, {\"Parameter\": \"system\", \"Description\": \"Commands on OakVar system\"}, {\"Parameter\": \"license\", \"Description\": \"Shows license information.\"}, {\"Parameter\": \"update\", \"Description\": \"Updates OakVar to the latest version.\"}]}",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:300",
+        "label": "2.12.25",
+        "shape": "dot",
+        "color": "#97c2fc",
+        "size": 20,
+        "neo4j_labels": [
+            "Version"
+        ]
+    },
+    {
+        "versionID": "freebayes1.3.1",
+        "Parameter": "{\"Command\": [{\"Parameter\": \"-h\", \"Description\": \"Prints this help dialog.\"}, {\"Parameter\": \"--help\", \"Description\": \"Prints this help dialog.\"}, {\"Parameter\": \"--version\", \"Description\": \"Prints the release number and the git commit id.\"}, {\"Parameter\": \"-b\", \"Description\": \"Add FILE to the set of BAM files to be analyzed.\"}, {\"Parameter\": \"--bam FILE\", \"Description\": \"Add FILE to the set of BAM files to be analyzed.\"}, {\"Parameter\": \"-L\", \"Description\": \"A file containing a list of BAM files to be analyzed.\"}, {\"Parameter\": \"--bam-list FILE\", \"Description\": \"A file containing a list of BAM files to be analyzed.\"}, {\"Parameter\": \"-c\", \"Description\": \"Read BAM input on stdin.\"}, {\"Parameter\": \"--stdin\", \"Description\": \"Read BAM input on stdin.\"}, {\"Parameter\": \"-f\", \"Description\": \"Use FILE as the reference sequence for analysis. An index file (FILE.fai) will be created if none exists. If neither --targets nor --region are specified, FreeBayes will analyze every position in this reference.\"}, {\"Parameter\": \"--fasta-reference FILE\", \"Description\": \"Use FILE as the reference sequence for analysis. An index file (FILE.fai) will be created if none exists. If neither --targets nor --region are specified, FreeBayes will analyze every position in this reference.\"}, {\"Parameter\": \"-t\", \"Description\": \"Limit analysis to targets listed in the BED-format FILE.\"}, {\"Parameter\": \"--targets FILE\", \"Description\": \"Limit analysis to targets listed in the BED-format FILE.\"}, {\"Parameter\": \"-r\", \"Description\": \"Limit analysis to the specified region, 0-base coordinates, end_position not included (same as BED format). Either '-' or '..' maybe used as a separator.\"}, {\"Parameter\": \"--region <chrom>:<start_position>-<end_position>\", \"Description\": \"Limit analysis to the specified region, 0-base coordinates, end_position not included (same as BED format). Either '-' or '..' maybe used as a separator.\"}, {\"Parameter\": \"-s\", \"Description\": \"Limit analysis to samples listed (one per line) in the FILE. By default FreeBayes will analyze all samples in its input BAM files.\"}, {\"Parameter\": \"--samples FILE\", \"Description\": \"Limit analysis to samples listed (one per line) in the FILE. By default FreeBayes will analyze all samples in its input BAM files.\"}, {\"Parameter\": \"--populations FILE\", \"Description\": \"Each line of FILE should list a sample and a population which it is part of. The population-based bayesian inference model will then be partitioned on the basis of the populations.\"}, {\"Parameter\": \"-A\", \"Description\": \"Read a copy number map from the BED file FILE, which has either a sample-level ploidy: sample_name copy_number or a region-specific format: seq_name start end sample_name copy_number ... for each region in each sample which does not have the default copy number as set by --ploidy. These fields can be delimited by space or tab.\"}, {\"Parameter\": \"--cnv-map FILE\", \"Description\": \"Read a copy number map from the BED file FILE, which has either a sample-level ploidy: sample_name copy_number or a region-specific format: seq_name start end sample_name copy_number ... for each region in each sample which does not have the default copy number as set by --ploidy. These fields can be delimited by space or tab.\"}, {\"Parameter\": \"-v\", \"Description\": \"Output VCF-format results to FILE. (default: stdout)\"}, {\"Parameter\": \"--vcf FILE\", \"Description\": \"Output VCF-format results to FILE. (default: stdout)\"}, {\"Parameter\": \"--gvcf\", \"Description\": \"Write gVCF output, which indicates coverage in uncalled regions.\"}, {\"Parameter\": \"--gvcf-chunk NUM\", \"Description\": \"When writing gVCF output emit a record for every NUM bases.\"}, {\"Parameter\": \"-&\", \"Description\": \"When writing the gVCF output emit a record for all bases if set to \\\"true\\\" , will also route an int to --gvcf-chunk similar to --output-mode EMIT_ALL_SITES from GATK\"}, {\"Parameter\": \"--gvcf-dont-use-chunk BOOL\", \"Description\": \"When writing the gVCF output emit a record for all bases if set to \\\"true\\\" , will also route an int to --gvcf-chunk similar to --output-mode EMIT_ALL_SITES from GATK\"}, {\"Parameter\": \"-@\", \"Description\": \"Use variants reported in VCF file as input to the algorithm. Variants in this file will included in the output even if there is not enough support in the data to pass input filters.\"}, {\"Parameter\": \"--variant-input VCF\", \"Description\": \"Use variants reported in VCF file as input to the algorithm. Variants in this file will included in the output even if there is not enough support in the data to pass input filters.\"}, {\"Parameter\": \"-l\", \"Description\": \"Only provide variant calls and genotype likelihoods for sites and alleles which are provided in the VCF input, and provide output in the VCF for all input alleles, not just those which have support in the data.\"}, {\"Parameter\": \"--only-use-input-alleles\", \"Description\": \"Only provide variant calls and genotype likelihoods for sites and alleles which are provided in the VCF input, and provide output in the VCF for all input alleles, not just those which have support in the data.\"}, {\"Parameter\": \"--haplotype-basis-alleles VCF\", \"Description\": \"When specified, only variant alleles provided in this input VCF will be used for the construction of complex or haplotype alleles.\"}, {\"Parameter\": \"--report-all-haplotype-alleles\", \"Description\": \"At sites where genotypes are made over haplotype alleles, provide information about all alleles in output, not only those which are called.\"}, {\"Parameter\": \"--report-monomorphic\", \"Description\": \"Report even loci which appear to be monomorphic, and report all considered alleles, even those which are not in called genotypes. Loci which do not have any potential alternates have '.' for ALT.\"}, {\"Parameter\": \"-P\", \"Description\": \"Report sites if the probability that there is a polymorphism at the site is greater than N.  default: 0.0.  Note that post- filtering is generally recommended over the use of this parameter.\"}, {\"Parameter\": \"--pvar N\", \"Description\": \"Report sites if the probability that there is a polymorphism at the site is greater than N.  default: 0.0.  Note that post- filtering is generally recommended over the use of this parameter.\"}, {\"Parameter\": \"--strict-vcf\", \"Description\": \"Generate strict VCF format (FORMAT/GQ will be an int)\"}, {\"Parameter\": \"-T\", \"Description\": \"The expected mutation rate or pairwise nucleotide diversity among the population under analysis. This serves as the single parameter to the Ewens Sampling Formula prior model default: 0.001\"}, {\"Parameter\": \"--theta N\", \"Description\": \"The expected mutation rate or pairwise nucleotide diversity among the population under analysis. This serves as the single parameter to the Ewens Sampling Formula prior model default: 0.001\"}, {\"Parameter\": \"-p\", \"Description\": \"Sets the default ploidy for the analysis to N.  default: 2\"}, {\"Parameter\": \"--ploidy N\", \"Description\": \"Sets the default ploidy for the analysis to N.  default: 2\"}, {\"Parameter\": \"-J\", \"Description\": \"Assume that samples result from pooled sequencing. Model pooled samples using discrete genotypes across pools. When using this flag, set --ploidy to the number of alleles in each sample or use the --cnv-map to define per-sample ploidy.\"}, {\"Parameter\": \"--pooled-discrete\", \"Description\": \"Assume that samples result from pooled sequencing. Model pooled samples using discrete genotypes across pools. When using this flag, set --ploidy to the number of alleles in each sample or use the --cnv-map to define per-sample ploidy.\"}, {\"Parameter\": \"-K\", \"Description\": \"Output all alleles which pass input filters, regardles of genotyping outcome or model.\"}, {\"Parameter\": \"--pooled-continuous\", \"Description\": \"Output all alleles which pass input filters, regardles of genotyping outcome or model.\"}, {\"Parameter\": \"-Z\", \"Description\": \"This flag includes the reference allele in the analysis as if it is another sample from the same population.\"}, {\"Parameter\": \"--use-reference-allele\", \"Description\": \"This flag includes the reference allele in the analysis as if it is another sample from the same population.\"}, {\"Parameter\": \"--reference-quality MQ,BQ\", \"Description\": \"Assign mapping quality of MQ to the reference allele at each site and base quality of BQ.  default: 100,60\"}, {\"Parameter\": \"-n\", \"Description\": \"Evaluate only the best N SNP alleles, ranked by sum of supporting quality scores.  (Set to 0 to use all; default: all)\"}, {\"Parameter\": \"--use-best-n-alleles N\", \"Description\": \"Evaluate only the best N SNP alleles, ranked by sum of supporting quality scores.  (Set to 0 to use all; default: all)\"}, {\"Parameter\": \"-E\", \"Description\": \"Allow haplotype calls with contiguous embedded matches of up to this length. Set N=-1 to disable clumping. (default: 3)\"}, {\"Parameter\": \"--max-complex-gap N\", \"Description\": \"Allow haplotype calls with contiguous embedded matches of up to this length. Set N=-1 to disable clumping. (default: 3)\"}, {\"Parameter\": \"--haplotype-length N\", \"Description\": \"Allow haplotype calls with contiguous embedded matches of up to this length. Set N=-1 to disable clumping. (default: 3)\"}, {\"Parameter\": \"--min-repeat-size N\", \"Description\": \"When assembling observations across repeats, require the total repeat length at least this many bp.  (default: 5)\"}, {\"Parameter\": \"--min-repeat-entropy N\", \"Description\": \"To detect interrupted repeats, build across sequence until it has entropy > N bits per bp. Set to 0 to turn off. (default: 1)\"}, {\"Parameter\": \"--no-partial-observations\", \"Description\": \"Exclude observations which do not fully span the dynamically-determined detection window.  (default, use all observations, dividing partial support across matching haplotypes when generating haplotypes.)\"}, {\"Parameter\": \"-I\", \"Description\": \"Remove SNP observations from input.\"}, {\"Parameter\": \"--throw-away-snp-obs\", \"Description\": \"Remove SNP observations from input.\"}, {\"Parameter\": \"-i\", \"Description\": \"Remove indel observations from input.\"}, {\"Parameter\": \"--throw-away-indels-obs\", \"Description\": \"Remove indel observations from input.\"}, {\"Parameter\": \"-X\", \"Description\": \"Remove MNP observations from input.\"}, {\"Parameter\": \"--throw-away-mnp-obs\", \"Description\": \"Remove MNP observations from input.\"}, {\"Parameter\": \"-u\", \"Description\": \"Remove complex allele observations from input.\"}, {\"Parameter\": \"--throw-away-complex-obs\", \"Description\": \"Remove complex allele observations from input.\"}, {\"Parameter\": \"-O\", \"Description\": \"Turn off left-alignment of indels, which is enabled by default.\"}, {\"Parameter\": \"--dont-left-align-indels\", \"Description\": \"Turn off left-alignment of indels, which is enabled by default.\"}, {\"Parameter\": \"-4\", \"Description\": \"Include duplicate-marked alignments in the analysis. default: exclude duplicates marked as such in alignments\"}, {\"Parameter\": \"--use-duplicate-reads\", \"Description\": \"Include duplicate-marked alignments in the analysis. default: exclude duplicates marked as such in alignments\"}, {\"Parameter\": \"-m\", \"Description\": \"Exclude alignments from analysis if they have a mapping quality less than Q.  default: 1\"}, {\"Parameter\": \"--min-mapping-quality Q\", \"Description\": \"Exclude alignments from analysis if they have a mapping quality less than Q.  default: 1\"}, {\"Parameter\": \"-q\", \"Description\": \"Exclude alleles from analysis if their supporting base quality is less than Q.  default: 0\"}, {\"Parameter\": \"--min-base-quality Q\", \"Description\": \"Exclude alleles from analysis if their supporting base quality is less than Q.  default: 0\"}, {\"Parameter\": \"-R\", \"Description\": \"Consider any allele in which the sum of qualities of supporting observations is at least Q.  default: 0\"}, {\"Parameter\": \"--min-supporting-allele-qsum Q\", \"Description\": \"Consider any allele in which the sum of qualities of supporting observations is at least Q.  default: 0\"}, {\"Parameter\": \"-Y\", \"Description\": \"Consider any allele in which and the sum of mapping qualities of supporting reads is at least Q.  default: 0\"}, {\"Parameter\": \"--min-supporting-mapping-qsum Q\", \"Description\": \"Consider any allele in which and the sum of mapping qualities of supporting reads is at least Q.  default: 0\"}, {\"Parameter\": \"-Q\", \"Description\": \"Count mismatches toward --read-mismatch-limit if the base quality of the mismatch is >= Q.  default: 10\"}, {\"Parameter\": \"--mismatch-base-quality-threshold Q\", \"Description\": \"Count mismatches toward --read-mismatch-limit if the base quality of the mismatch is >= Q.  default: 10\"}, {\"Parameter\": \"-U\", \"Description\": \"Exclude reads with more than N mismatches where each mismatch has base quality >= mismatch-base-quality-threshold. default: ~unbounded\"}, {\"Parameter\": \"--read-mismatch-limit N\", \"Description\": \"Exclude reads with more than N mismatches where each mismatch has base quality >= mismatch-base-quality-threshold. default: ~unbounded\"}, {\"Parameter\": \"-z\", \"Description\": \"Exclude reads with more than N [0,1] fraction of mismatches where each mismatch has base quality >= mismatch-base-quality-threshold default: 1.0\"}, {\"Parameter\": \"--read-max-mismatch-fraction N\", \"Description\": \"Exclude reads with more than N [0,1] fraction of mismatches where each mismatch has base quality >= mismatch-base-quality-threshold default: 1.0\"}, {\"Parameter\": \"-$\", \"Description\": \"Exclude reads with more than N base mismatches, ignoring gaps with quality >= mismatch-base-quality-threshold. default: ~unbounded\"}, {\"Parameter\": \"--read-snp-limit N\", \"Description\": \"Exclude reads with more than N base mismatches, ignoring gaps with quality >= mismatch-base-quality-threshold. default: ~unbounded\"}, {\"Parameter\": \"-e\", \"Description\": \"Exclude reads with more than N separate gaps. default: ~unbounded\"}, {\"Parameter\": \"--read-indel-limit N\", \"Description\": \"Exclude reads with more than N separate gaps. default: ~unbounded\"}, {\"Parameter\": \"-0\", \"Description\": \"Use stringent input base and mapping quality filters Equivalent to -m 30 -q 20 -R 0 -S 0\"}, {\"Parameter\": \"--standard-filters\", \"Description\": \"Use stringent input base and mapping quality filters Equivalent to -m 30 -q 20 -R 0 -S 0\"}, {\"Parameter\": \"-F\", \"Description\": \"Require at least this fraction of observations supporting an alternate allele within a single individual in the in order to evaluate the position.  default: 0.05\"}, {\"Parameter\": \"--min-alternate-fraction N\", \"Description\": \"Require at least this fraction of observations supporting an alternate allele within a single individual in the in order to evaluate the position.  default: 0.05\"}, {\"Parameter\": \"-C\", \"Description\": \"Require at least this count of observations supporting an alternate allele within a single individual in order to evaluate the position.  default: 2\"}, {\"Parameter\": \"--min-alternate-count N\", \"Description\": \"Require at least this count of observations supporting an alternate allele within a single individual in order to evaluate the position.  default: 2\"}, {\"Parameter\": \"-3\", \"Description\": \"Require at least this sum of quality of observations supporting an alternate allele within a single individual in order to evaluate the position.  default: 0\"}, {\"Parameter\": \"--min-alternate-qsum N\", \"Description\": \"Require at least this sum of quality of observations supporting an alternate allele within a single individual in order to evaluate the position.  default: 0\"}, {\"Parameter\": \"-G\", \"Description\": \"Require at least this count of observations supporting an alternate allele within the total population in order to use the allele in analysis.  default: 1\"}, {\"Parameter\": \"--min-alternate-total N\", \"Description\": \"Require at least this count of observations supporting an alternate allele within the total population in order to use the allele in analysis.  default: 1\"}, {\"Parameter\": \"--min-coverage N\", \"Description\": \"Require at least this coverage to process a site. default: 0\"}, {\"Parameter\": \"--limit-coverage N\", \"Description\": \"Downsample per-sample coverage to this level if greater than this coverage. default: no limit\"}, {\"Parameter\": \"-g\", \"Description\": \"Skip processing of alignments overlapping positions with coverage >N. This filters sites above this coverage, but will also reduce data nearby. default: no limit\"}, {\"Parameter\": \"--skip-coverage N\", \"Description\": \"Skip processing of alignments overlapping positions with coverage >N. This filters sites above this coverage, but will also reduce data nearby. default: no limit\"}, {\"Parameter\": \"-k\", \"Description\": \"Equivalent to --pooled-discrete --hwe-priors-off and removal of Ewens Sampling Formula component of priors.\"}, {\"Parameter\": \"--no-population-priors\", \"Description\": \"Equivalent to --pooled-discrete --hwe-priors-off and removal of Ewens Sampling Formula component of priors.\"}, {\"Parameter\": \"-w\", \"Description\": \"Disable estimation of the probability of the combination arising under HWE given the allele frequency as estimated by observation frequency.\"}, {\"Parameter\": \"--hwe-priors-off\", \"Description\": \"Disable estimation of the probability of the combination arising under HWE given the allele frequency as estimated by observation frequency.\"}, {\"Parameter\": \"-V\", \"Description\": \"Disable incorporation of prior expectations about observations. Uses read placement probability, strand balance probability, and read position (5'-3') probability.\"}, {\"Parameter\": \"--binomial-obs-priors-off\", \"Description\": \"Disable incorporation of prior expectations about observations. Uses read placement probability, strand balance probability, and read position (5'-3') probability.\"}, {\"Parameter\": \"-a\", \"Description\": \"Disable use of aggregate probability of observation balance between alleles as a component of the priors.\"}, {\"Parameter\": \"--allele-balance-priors-off\", \"Description\": \"Disable use of aggregate probability of observation balance between alleles as a component of the priors.\"}, {\"Parameter\": \"--observation-bias FILE\", \"Description\": \"Read length-dependent allele observation biases from FILE. The format is [length] [alignment efficiency relative to reference] where the efficiency is 1 if there is no relative observation bias.\"}, {\"Parameter\": \"--base-quality-cap Q\", \"Description\": \"Limit estimated observation quality by capping base quality at Q.\"}, {\"Parameter\": \"--prob-contamination F\", \"Description\": \"An estimate of contamination to use for all samples.  default: 10e-9\"}, {\"Parameter\": \"--legacy-gls\", \"Description\": \"Use legacy (polybayes equivalent) genotype likelihood calculations\"}, {\"Parameter\": \"--contamination-estimates FILE\", \"Description\": \"A file containing per-sample estimates of contamination, such as those generated by VerifyBamID. The format should be: sample p(read=R|genotype=AR) p(read=A|genotype=AA) Sample '*' can be used to set default contamination estimates.\"}, {\"Parameter\": \"--report-genotype-likelihood-max\", \"Description\": \"Report genotypes using the maximum-likelihood estimate provided from genotype likelihoods.\"}, {\"Parameter\": \"-B\", \"Description\": \"Iterate no more than N times during genotyping step. default: 1000.\"}, {\"Parameter\": \"--genotyping-max-iterations N\", \"Description\": \"Iterate no more than N times during genotyping step. default: 1000.\"}, {\"Parameter\": \"--genotyping-max-banddepth N\", \"Description\": \"Integrate no deeper than the Nth best genotype by likelihood when genotyping. default: 6.\"}, {\"Parameter\": \"-W\", \"Description\": \"Integrate all genotype combinations in our posterior space which include no more than N samples with their Mth best data likelihood. default: 1,3.\"}, {\"Parameter\": \"--posterior-integration-limits N,M\", \"Description\": \"Integrate all genotype combinations in our posterior space which include no more than N samples with their Mth best data likelihood. default: 1,3.\"}, {\"Parameter\": \"-N\", \"Description\": \"Skip sample genotypings for which the sample has no supporting reads.\"}, {\"Parameter\": \"--exclude-unobserved-genotypes\", \"Description\": \"Skip sample genotypings for which the sample has no supporting reads.\"}, {\"Parameter\": \"-S\", \"Description\": \"Limit posterior integration to samples where the second-best genotype likelihood is no more than log(N) from the highest genotype likelihood for the sample.  default: ~unbounded\"}, {\"Parameter\": \"--genotype-variant-threshold N\", \"Description\": \"Limit posterior integration to samples where the second-best genotype likelihood is no more than log(N) from the highest genotype likelihood for the sample.  default: ~unbounded\"}, {\"Parameter\": \"-j\", \"Description\": \"Use mapping quality of alleles when calculating data likelihoods.\"}, {\"Parameter\": \"--use-mapping-quality\", \"Description\": \"Use mapping quality of alleles when calculating data likelihoods.\"}, {\"Parameter\": \"-H\", \"Description\": \"Use a weighted sum of base qualities around an indel, scaled by the distance from the indel.  By default use a minimum BQ in flanking sequence.\"}, {\"Parameter\": \"--harmonic-indel-quality\", \"Description\": \"Use a weighted sum of base qualities around an indel, scaled by the distance from the indel.  By default use a minimum BQ in flanking sequence.\"}, {\"Parameter\": \"-D\", \"Description\": \"Incorporate non-independence of reads by scaling successive observations by this factor during data likelihood calculations.  default: 0.9\"}, {\"Parameter\": \"--read-dependence-factor N\", \"Description\": \"Incorporate non-independence of reads by scaling successive observations by this factor during data likelihood calculations.  default: 0.9\"}, {\"Parameter\": \"-=\", \"Description\": \"Calculate the marginal probability of genotypes and report as GQ in each sample field in the VCF output.\"}, {\"Parameter\": \"--genotype-qualities\", \"Description\": \"Calculate the marginal probability of genotypes and report as GQ in each sample field in the VCF output.\"}, {\"Parameter\": \"-d\", \"Description\": \"Print debugging output.\"}, {\"Parameter\": \"--debug\", \"Description\": \"Print debugging output.\"}, {\"Parameter\": \"-dd\", \"Description\": \"Print more verbose debugging output (requires \\\"make DEBUG\\\")\"}]}",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:441",
+        "label": "1.3.1",
+        "shape": "dot",
+        "color": "#97c2fc",
+        "size": 20,
+        "neo4j_labels": [
+            "Version"
+        ]
+    },
+    {
+        "versionID": "hap.py0.3.12",
+        "Parameter": "{\"Command\": [{\"Parameter\": \"_vcfs\", \"Description\": \"Two VCF files.\"}, {\"Parameter\": \"-h\", \"Description\": \"show this help message and exit\"}, {\"Parameter\": \"--help\", \"Description\": \"show this help message and exit\"}, {\"Parameter\": \"-v\", \"Description\": \"Show version number and exit.\"}, {\"Parameter\": \"--version\", \"Description\": \"Show version number and exit.\"}, {\"Parameter\": \"-r REF\", \"Description\": \"Specify a reference file.\"}, {\"Parameter\": \"--reference REF\", \"Description\": \"Specify a reference file.\"}, {\"Parameter\": \"-o REPORTS_PREFIX\", \"Description\": \"Filename prefix for report output.\"}, {\"Parameter\": \"--report-prefix REPORTS_PREFIX\", \"Description\": \"Filename prefix for report output.\"}, {\"Parameter\": \"--scratch-prefix SCRATCH_PREFIX\", \"Description\": \"Directory for scratch files.\"}, {\"Parameter\": \"--keep-scratch\", \"Description\": \"Filename prefix for scratch report output.\"}, {\"Parameter\": \"-t {xcmp,ga4gh}\", \"Description\": \"Annotation format in input VCF file.\"}, {\"Parameter\": \"--type {xcmp,ga4gh}\", \"Description\": \"Annotation format in input VCF file.\"}, {\"Parameter\": \"-f FP_BEDFILE\", \"Description\": \"False positive / confident call regions (.bed or .bed.gz). Calls outside these regions will be labelled as UNK.\"}, {\"Parameter\": \"--false-positives FP_BEDFILE\", \"Description\": \"False positive / confident call regions (.bed or .bed.gz). Calls outside these regions will be labelled as UNK.\"}, {\"Parameter\": \"--stratification STRAT_TSV\", \"Description\": \"Stratification file list (TSV format -- first column is region name, second column is file name).\"}, {\"Parameter\": \"--stratification-region STRAT_REGIONS\", \"Description\": \"Add single stratification region, e.g. --stratification-region TEST:test.bed\"}, {\"Parameter\": \"--stratification-fixchr\", \"Description\": \"Add chr prefix to stratification files if necessary\"}, {\"Parameter\": \"-V\", \"Description\": \"Write an annotated VCF.\"}, {\"Parameter\": \"--write-vcf\", \"Description\": \"Write an annotated VCF.\"}, {\"Parameter\": \"-X\", \"Description\": \"Write advanced counts and metrics.\"}, {\"Parameter\": \"--write-counts\", \"Description\": \"Write advanced counts and metrics.\"}, {\"Parameter\": \"--no-write-counts\", \"Description\": \"Do not write advanced counts and metrics.\"}, {\"Parameter\": \"--output-vtc\", \"Description\": \"Write VTC field in the final VCF which gives the counts each position has contributed to.\"}, {\"Parameter\": \"--preserve-info\", \"Description\": \"When using XCMP, preserve and merge the INFO fields in truth and query. Useful for ROC computation.\"}, {\"Parameter\": \"--roc ROC\", \"Description\": \"Select a feature to produce a ROC on (INFO feature, QUAL, GQX, ...).\"}, {\"Parameter\": \"--no-roc\", \"Description\": \"Disable ROC computation and only output summary statistics for more concise output.\"}, {\"Parameter\": \"--roc-regions ROC_REGIONS\", \"Description\": \"Select a list of regions to compute ROCs in. By default, only the '*' region will produce ROC output (aggregate variant counts).\"}, {\"Parameter\": \"--roc-filter ROC_FILTER\", \"Description\": \"Select a filter to ignore when making ROCs.\"}, {\"Parameter\": \"--roc-delta ROC_DELTA\", \"Description\": \"Minimum spacing between ROC QQ levels.\"}, {\"Parameter\": \"--ci-alpha CI_ALPHA\", \"Description\": \"Confidence level for Jeffrey's CI for recall, precision and fraction of non-assessed calls.\"}, {\"Parameter\": \"--no-json\", \"Description\": \"Disable JSON file output.\"}, {\"Parameter\": \"--location LOCATIONS\", \"Description\": \"Comma-separated list of locations [use naming after preprocessing], when not specified will use whole VCF.\"}, {\"Parameter\": \"-l LOCATIONS\", \"Description\": \"Comma-separated list of locations [use naming after preprocessing], when not specified will use whole VCF.\"}, {\"Parameter\": \"--pass-only\", \"Description\": \"Keep only PASS variants.\"}, {\"Parameter\": \"--filters-only FILTERS_ONLY\", \"Description\": \"Specify a comma-separated list of filters to apply (by default all filters are ignored / passed on.\"}, {\"Parameter\": \"-R REGIONS_BEDFILE\", \"Description\": \"Restrict analysis to given (sparse) regions (using -R in bcftools).\"}, {\"Parameter\": \"--restrict-regions REGIONS_BEDFILE\", \"Description\": \"Restrict analysis to given (sparse) regions (using -R in bcftools).\"}, {\"Parameter\": \"-T TARGETS_BEDFILE\", \"Description\": \"Restrict analysis to given (dense) regions (using -T in bcftools).\"}, {\"Parameter\": \"--target-regions TARGETS_BEDFILE\", \"Description\": \"Restrict analysis to given (dense) regions (using -T in bcftools).\"}, {\"Parameter\": \"-L\", \"Description\": \"Left-shift variants safely.\"}, {\"Parameter\": \"--leftshift\", \"Description\": \"Left-shift variants safely.\"}, {\"Parameter\": \"--no-leftshift\", \"Description\": \"Do not left-shift variants safely.\"}, {\"Parameter\": \"--decompose\", \"Description\": \"Decompose variants into primitives. This results in more granular counts.\"}, {\"Parameter\": \"-D\", \"Description\": \"Do not decompose variants into primitives.\"}, {\"Parameter\": \"--no-decompose\", \"Description\": \"Do not decompose variants into primitives.\"}, {\"Parameter\": \"--bcftools-norm\", \"Description\": \"Enable preprocessing through bcftools norm -c x -D (requires external preprocessing to be switched on).\"}, {\"Parameter\": \"--fixchr\", \"Description\": \"Add chr prefix to VCF records where necessary (default: auto, attempt to match reference).\"}, {\"Parameter\": \"--no-fixchr\", \"Description\": \"Do not add chr prefix to VCF records (default: auto, attempt to match reference).\"}, {\"Parameter\": \"--bcf\", \"Description\": \"Use BCF internally. This is the default when the input file is in BCF format already. Using BCF can speed up temp file access, but may fail for VCF files that have broken headers or records that don't comply with the header.\"}, {\"Parameter\": \"--somatic\", \"Description\": \"Assume the input file is a somatic call file and squash all columns into one, putting all FORMATs into INFO + use half genotypes (see also --set-gt). This will replace all sample columns and replace them with a single one.\"}, {\"Parameter\": \"--set-gt {half,hemi,het,hom,first}\", \"Description\": \"This is used to treat Strelka somatic files Possible values for this parameter: half / hemi / het / hom / half to assign one of the following genotypes to the resulting sample: 1 | 0/1 | 1/1 | ./1. This will replace all sample columns and replace them with a single one.\"}, {\"Parameter\": \"--filter-nonref\", \"Description\": \"Remove any variants genotyped as <NON_REF>.\"}, {\"Parameter\": \"--convert-gvcf-truth\", \"Description\": \"Convert the truth set from genome VCF format to a VCF before processing.\"}, {\"Parameter\": \"--convert-gvcf-query\", \"Description\": \"Convert the query set from genome VCF format to a VCF before processing.\"}, {\"Parameter\": \"--gender {male,female,auto,none}\", \"Description\": \"Specify sex. This determines how haploid calls on chrX get treated: for male samples, all non-ref calls (in the truthset only when running through hap.py) are given a 1/1 genotype.\"}, {\"Parameter\": \"--preprocess-truth\", \"Description\": \"Preprocess truth file with same settings as query (default is to accept truth in original format).\"}, {\"Parameter\": \"--usefiltered-truth\", \"Description\": \"Use filtered variant calls in truth file (by default, only PASS calls in the truth file are used)\"}, {\"Parameter\": \"--preprocessing-window-size PREPROCESS_WINDOW\", \"Description\": \"Preprocessing window size (variants further apart than that size are not expected to interfere).\"}, {\"Parameter\": \"--adjust-conf-regions\", \"Description\": \"Adjust confident regions to include variant locations. Note this will only include variants that are included in the CONF regions already when viewing with bcftools; this option only makes sure insertions are padded correctly in the CONF regions (to capture these, both the base before and after must be contained in the bed file).\"}, {\"Parameter\": \"--no-adjust-conf-regions\", \"Description\": \"Do not adjust confident regions for insertions.\"}, {\"Parameter\": \"--unhappy\", \"Description\": \"Disable haplotype comparison (only count direct GT matches as TP).\"}, {\"Parameter\": \"--no-haplotype-comparison\", \"Description\": \"Disable haplotype comparison (only count direct GT matches as TP).\"}, {\"Parameter\": \"-w WINDOW\", \"Description\": \"Minimum distance between variants such that they fall into the same superlocus.\"}, {\"Parameter\": \"--window-size WINDOW\", \"Description\": \"Minimum distance between variants such that they fall into the same superlocus.\"}, {\"Parameter\": \"--xcmp-enumeration-threshold MAX_ENUM\", \"Description\": \"Enumeration threshold / maximum number of sequences to enumerate per block.\"}, {\"Parameter\": \"--xcmp-expand-hapblocks HB_EXPAND\", \"Description\": \"Expand haplotype blocks by this many basepairs left and right.\"}, {\"Parameter\": \"--threads THREADS\", \"Description\": \"Number of threads to use.\"}, {\"Parameter\": \"--engine {xcmp,vcfeval,scmp-somatic,scmp-distance}\", \"Description\": \"Comparison engine to use.\"}, {\"Parameter\": \"--engine-vcfeval-path ENGINE_VCFEVAL\", \"Description\": \"This parameter should give the path to the \\\"rtg\\\" executable. The default is rtg\"}, {\"Parameter\": \"--engine-vcfeval-template ENGINE_VCFEVAL_TEMPLATE\", \"Description\": \"Vcfeval needs the reference sequence formatted in its own file format (SDF -- run rtg format -o ref.SDF ref.fa). You can specify this here to save time when running hap.py with vcfeval. If no SDF folder is specified, hap.py will create a temporary one.\"}, {\"Parameter\": \"--scmp-distance ENGINE_SCMP_DISTANCE\", \"Description\": \"For distance-based matching (vcfeval and scmp), this is the distance between variants to use.\"}, {\"Parameter\": \"--lose-match-distance ENGINE_SCMP_DISTANCE\", \"Description\": \"For distance-based matching (vcfeval and scmp), this is the distance between variants to use.\"}, {\"Parameter\": \"--logfile LOGFILE\", \"Description\": \"Write logging information into file rather than to stderr\"}, {\"Parameter\": \"--verbose\", \"Description\": \"Raise logging level from warning to info.\"}, {\"Parameter\": \"--quiet\", \"Description\": \"Set logging level to output errors only.\"}]}",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:754",
+        "label": "0.3.12",
+        "shape": "dot",
+        "color": "#97c2fc",
+        "size": 20,
+        "neo4j_labels": [
+            "Version"
+        ]
+    },
+    {
+        "versionID": "longshot1.0.0",
+        "Parameter": "{\"Command\": [{\"Parameter\": \"-A, --auto_max_cov\", \"Description\": \"Automatically calculate mean coverage for region and set max coverage to mean_coverage + 5*sqrt(mean_coverage). (SLOWER)\"}, {\"Parameter\": \"-S, --stable_alignment\", \"Description\": \"Use numerically-stable (logspace) pair HMM forward algorithm. Is significantly slower but may be more accurate. Tests have shown this not to be necessary for highly error prone reads (PacBio CLR).\"}, {\"Parameter\": \"-F, --force_overwrite\", \"Description\": \"If output files (VCF or variant debug directory) exist, delete and overwrite them.\"}, {\"Parameter\": \"-x, --max_alignment\", \"Description\": \"Use max scoring alignment algorithm rather than pair HMM forward algorithm.\"}, {\"Parameter\": \"-n, --no_haps\", \"Description\": \"Don't call HapCUT2 to phase variants.\"}, {\"Parameter\": \"--output-ref\", \"Description\": \"print reference genotypes (non-variant), use this option only in combination with -v option.\"}, {\"Parameter\": \"-h, --help\", \"Description\": \"Prints help information\"}, {\"Parameter\": \"-V, --version\", \"Description\": \"Prints version information\"}, {\"Parameter\": \"-b, --bam <BAM>\", \"Description\": \"sorted, indexed BAM file with error-prone reads\"}, {\"Parameter\": \"-f, --ref <FASTA>\", \"Description\": \"indexed FASTA reference that BAM file is aligned to\"}, {\"Parameter\": \"-o, --out <VCF>\", \"Description\": \"output VCF file with called variants.\"}, {\"Parameter\": \"-r, --region <string>\", \"Description\": \"Region in format <chrom> or <chrom:start-stop> in which to call variants (1-based, inclusive).\"}, {\"Parameter\": \"-v, --potential_variants <VCF>\", \"Description\": \"Genotype and phase the variants in this VCF instead of using pileup method to find variants. NOTES: VCF must be gzipped and tabix indexed or contain contig information. Use with caution because excessive false potential variants can lead to inaccurate results. Every variant is used and only the allele fields are considered -- Genotypes, filters, qualities etc are ignored. Indel variants will be genotyped but not phased. Triallelic variants and structural variants are currently not supported.\"}, {\"Parameter\": \"-O, --out_bam <BAM>\", \"Description\": \"Write new bam file with haplotype tags (HP:i:1 and HP:i:2) for reads assigned to each haplotype, any existing HP and PS tags are removed\"}, {\"Parameter\": \"-c, --min_cov <int>\", \"Description\": \"Minimum coverage (of reads passing filters) to consider position as a potential SNV. [default: 6]\"}, {\"Parameter\": \"-C, --max_cov <int>\", \"Description\": \"Maximum coverage (of reads passing filters) to consider position as a potential SNV. [default: 8000]\"}, {\"Parameter\": \"-q, --min_mapq <int>\", \"Description\": \"Minimum mapping quality to use a read. [default: 20]\"}, {\"Parameter\": \"-a, --min_allele_qual <float>\", \"Description\": \"Minimum estimated quality (Phred-scaled) of allele observation on read to use for genotyping/haplotyping. [default: 7.0]\"}, {\"Parameter\": \"-y, --hap_assignment_qual <float>\", \"Description\": \"Minimum quality (Phred-scaled) of read->haplotype assignment (for read separation). [default: 20.0]\"}, {\"Parameter\": \"-Q, --potential_snv_cutoff <float>\", \"Description\": \"Consider a site as a potential SNV if the original PHRED-scaled QUAL score for 0/0 genotype is below this amount (a larger value considers more potential SNV sites). [default: 20.0]\"}, {\"Parameter\": \"-e, --min_alt_count <int>\", \"Description\": \"Require a potential SNV to have at least this many alternate allele observations. [default: 3]\"}, {\"Parameter\": \"-E, --min_alt_frac <float>\", \"Description\": \"Require a potential SNV to have at least this fraction of alternate allele observations. [default: 0.125]\"}, {\"Parameter\": \"-L, --hap_converge_delta <float>\", \"Description\": \"Terminate the haplotype/genotype iteration when the relative change in log-likelihood falls below this amount. Setting a larger value results in faster termination but potentially less accurate results. [default: 0.0001]\"}, {\"Parameter\": \"-l, --anchor_length <int>\", \"Description\": \"Length of indel-free anchor sequence on the left and right side of read realignment window. [default: 6]\"}, {\"Parameter\": \"-m, --max_snvs <int>\", \"Description\": \"Cut off variant clusters after this many variants. 2^m haplotypes must be aligned against per read for a variant cluster of size m. [default: 3]\"}, {\"Parameter\": \"-W, --max_window <int>\", \"Description\": \"Maximum \\\"padding\\\" bases on either side of variant realignment window [default: 50]\"}, {\"Parameter\": \"-I, --max_cigar_indel <int>\", \"Description\": \"Throw away a read-variant during allelotyping if there is a CIGAR indel (I/D/N) longer than this amount in its window. [default: 20]\"}, {\"Parameter\": \"--max_reads_estimation <int>\", \"Description\": \"number of reads used for estimating alignment parameters, default value is 0 which uses all reads [default: 0]\"}, {\"Parameter\": \"-B, --band_width <Band width>\", \"Description\": \"Minimum width of alignment band. Band will increase in size if sequences are different lengths. [default: 20]\"}, {\"Parameter\": \"-D, --density_params <string>\", \"Description\": \"Parameters to flag a variant as part of a \\\"dense cluster\\\". Format <n>:<l>:<gq>. If there are at least n variants within l base pairs with genotype quality >=gq, then these variants are flagged as \\\"dn\\\" [default: 10:500:50]\"}, {\"Parameter\": \"-s, --sample_id <string>\", \"Description\": \"Specify a sample ID to write to the output VCF [default: SAMPLE]\"}, {\"Parameter\": \"--hom_snv_rate <float>\", \"Description\": \"Specify the homozygous SNV Rate for genotype prior estimation [default: 0.0005]\"}, {\"Parameter\": \"--het_snv_rate <float>\", \"Description\": \"Specify the heterozygous SNV Rate for genotype prior estimation [default: 0.001]\"}, {\"Parameter\": \"--ts_tv_ratio <float>\", \"Description\": \"Specify the transition/transversion rate for genotype grior estimation [default: 0.5]\"}, {\"Parameter\": \"-P, --strand_bias_pvalue_cutoff <float>\", \"Description\": \"Remove a variant if the allele observations are biased toward one strand (forward or reverse) according to Fisher's exact test. Use this cutoff for the two-tailed P-value. [default: 0.01]\"}, {\"Parameter\": \"-d, --variant_debug_dir <path>\", \"Description\": \"write out current information about variants at each step of algorithm to files in this directory\"}]}",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:467",
+        "label": "1.0.0",
+        "shape": "dot",
+        "color": "#97c2fc",
+        "size": 20,
+        "neo4j_labels": [
+            "Version"
+        ]
+    },
+    {
+        "output": [],
+        "input": [],
+        "publication": "[{\"doi\": \"10.1038/s41467-019-12493-y\", \"title\": \"Longshot enables accurate variant calling in diploid genomes from single-molecule long read sequencing\", \"abstract\": \"Whole-genome sequencing using sequencing technologies such as Illumina enables the accurate detection of small-scale variants but provides limited information about haplotypes and variants in repetitive regions of the human genome. Single-molecule sequencing (SMS) technologies such as Pacific Biosciences and Oxford Nanopore generate long reads that can potentially address the limitations of short-read sequencing. However, the high error rate of SMS reads makes it challenging to detect small-scale variants in diploid genomes. We introduce a variant calling method, Longshot, which leverages the haplotype information present in SMS reads to accurately detect and phase single-nucleotide variants (SNVs) in diploid genomes. We demonstrate that Longshot achieves very high accuracy for SNV detection using whole-genome Pacific Biosciences data, outperforms existing variant calling methods, and enables variant detection in duplicated regions of the genome that cannot be mapped using short reads.\"}]",
+        "name": "Longshot",
+        "topic": [
+            "Genetic variation"
+        ],
+        "description": "Longshot is a variant calling tool for diploid genomes using long error prone reads such as Pacific Biosciences (PacBio) SMRT and Oxford Nanopore Technologies (ONT). It takes as input an aligned BAM file and outputs a phased VCF file with variants and haplotype information. It can also genotype and phase input VCF files. It can output haplotype-separated BAM files that can be used for downstream analysis. Currently, it only calls single nucleotide variants (SNVs), but it can genotype indels if they are given in an input VCF.",
+        "links": [
+            "https://github.com/pjedge/longshot/issues"
+        ],
+        "language": [],
+        "operation": [
+            "Variant calling"
+        ],
+        "operatingSystem": [],
+        "toolType": [
+            "Command-line tool"
+        ],
+        "biotoolID": "longshot",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:464",
+        "label": "Longshot",
+        "shape": "dot",
+        "color": "#fb7e81",
+        "size": 30,
+        "neo4j_labels": [
+            "Tool"
+        ]
+    },
+    {
+        "versionID": "nanopolish0.12.4",
+        "Parameter": "{\"Command\": [{\"Parameter\": \"--help\", \"Description\": \"Show help message and exit.\"}, {\"Parameter\": \"--version\", \"Description\": \"Show program's version number and exit.\"}, {\"Parameter\": \"call-methylation\", \"Description\": \"Call methylation.\"}, {\"Parameter\": \"eventalign\", \"Description\": \"Align events to a reference genome.\"}, {\"Parameter\": \"extract\", \"Description\": \"Extract data from files.\"}, {\"Parameter\": \"getmodel\", \"Description\": \"Get model.\"}, {\"Parameter\": \"help\", \"Description\": \"Show help message for a given command.\"}, {\"Parameter\": \"index\", \"Description\": \"Index files.\"}, {\"Parameter\": \"methyltrain\", \"Description\": \"Train methylation model.\"}, {\"Parameter\": \"phase-reads\", \"Description\": \"Phase reads.\"}, {\"Parameter\": \"polya\", \"Description\": \"PolyA tail analysis.\"}, {\"Parameter\": \"scorereads\", \"Description\": \"Score reads.\"}, {\"Parameter\": \"variants\", \"Description\": \"Call variants.\"}, {\"Parameter\": \"vcf2fasta\", \"Description\": \"Convert VCF to FASTA.\"}]}",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:463",
+        "label": "0.12.4",
+        "shape": "dot",
+        "color": "#97c2fc",
+        "size": 20,
+        "neo4j_labels": [
+            "Version"
+        ]
+    },
+    {
+        "versionID": "hap.py0.3.14",
+        "Parameter": "{\"Command\": [{\"Parameter\": \"_vcfs\", \"Description\": \"Two VCF files.\"}, {\"Parameter\": \"-h\", \"Description\": \"show this help message and exit\"}, {\"Parameter\": \"--help\", \"Description\": \"show this help message and exit\"}, {\"Parameter\": \"-v\", \"Description\": \"Show version number and exit.\"}, {\"Parameter\": \"--version\", \"Description\": \"Show version number and exit.\"}, {\"Parameter\": \"-r\", \"Description\": \"Specify a reference file.\"}, {\"Parameter\": \"--reference\", \"Description\": \"Specify a reference file.\"}, {\"Parameter\": \"-o\", \"Description\": \"Filename prefix for report output.\"}, {\"Parameter\": \"--report-prefix\", \"Description\": \"Filename prefix for report output.\"}, {\"Parameter\": \"--scratch-prefix\", \"Description\": \"Directory for scratch files.\"}, {\"Parameter\": \"--keep-scratch\", \"Description\": \"Filename prefix for scratch report output.\"}, {\"Parameter\": \"-t\", \"Description\": \"Annotation format in input VCF file.\"}, {\"Parameter\": \"--type\", \"Description\": \"Annotation format in input VCF file.\"}, {\"Parameter\": \"-f\", \"Description\": \"False positive / confident call regions (.bed or .bed.gz). Calls outside these regions will be labelled as UNK.\"}, {\"Parameter\": \"--false-positives\", \"Description\": \"False positive / confident call regions (.bed or .bed.gz). Calls outside these regions will be labelled as UNK.\"}, {\"Parameter\": \"--stratification\", \"Description\": \"Stratification file list (TSV format -- first column is region name, second column is file name).\"}, {\"Parameter\": \"--stratification-region\", \"Description\": \"Add single stratification region, e.g. --stratification-region TEST:test.bed\"}, {\"Parameter\": \"--stratification-fixchr\", \"Description\": \"Add chr prefix to stratification files if necessary\"}, {\"Parameter\": \"-V\", \"Description\": \"Write an annotated VCF.\"}, {\"Parameter\": \"--write-vcf\", \"Description\": \"Write an annotated VCF.\"}, {\"Parameter\": \"-X\", \"Description\": \"Write advanced counts and metrics.\"}, {\"Parameter\": \"--write-counts\", \"Description\": \"Write advanced counts and metrics.\"}, {\"Parameter\": \"--no-write-counts\", \"Description\": \"Do not write advanced counts and metrics.\"}, {\"Parameter\": \"--output-vtc\", \"Description\": \"Write VTC field in the final VCF which gives the counts each position has contributed to.\"}, {\"Parameter\": \"--preserve-info\", \"Description\": \"When using XCMP, preserve and merge the INFO fields in truth and query. Useful for ROC computation.\"}, {\"Parameter\": \"--roc\", \"Description\": \"Select a feature to produce a ROC on (INFO feature, QUAL, GQX, ...).\"}, {\"Parameter\": \"--no-roc\", \"Description\": \"Disable ROC computation and only output summary statistics for more concise output.\"}, {\"Parameter\": \"--roc-regions\", \"Description\": \"Select a list of regions to compute ROCs in. By default, only the '*' region will produce ROC output (aggregate variant counts).\"}, {\"Parameter\": \"--roc-filter\", \"Description\": \"Select a filter to ignore when making ROCs.\"}, {\"Parameter\": \"--roc-delta\", \"Description\": \"Minimum spacing between ROC QQ levels.\"}, {\"Parameter\": \"--ci-alpha\", \"Description\": \"Confidence level for Jeffrey's CI for recall, precision and fraction of non-assessed calls.\"}, {\"Parameter\": \"--no-json\", \"Description\": \"Disable JSON file output.\"}, {\"Parameter\": \"--location\", \"Description\": \"Comma-separated list of locations [use naming after preprocessing], when not specified will use whole VCF.\"}, {\"Parameter\": \"-l\", \"Description\": \"Comma-separated list of locations [use naming after preprocessing], when not specified will use whole VCF.\"}, {\"Parameter\": \"--pass-only\", \"Description\": \"Keep only PASS variants.\"}, {\"Parameter\": \"--filters-only\", \"Description\": \"Specify a comma-separated list of filters to apply (by default all filters are ignored / passed on.\"}, {\"Parameter\": \"-R\", \"Description\": \"Restrict analysis to given (sparse) regions (using -R in bcftools).\"}, {\"Parameter\": \"--restrict-regions\", \"Description\": \"Restrict analysis to given (sparse) regions (using -R in bcftools).\"}, {\"Parameter\": \"-T\", \"Description\": \"Restrict analysis to given (dense) regions (using -T in bcftools).\"}, {\"Parameter\": \"--target-regions\", \"Description\": \"Restrict analysis to given (dense) regions (using -T in bcftools).\"}, {\"Parameter\": \"-L\", \"Description\": \"Left-shift variants safely.\"}, {\"Parameter\": \"--leftshift\", \"Description\": \"Left-shift variants safely.\"}, {\"Parameter\": \"--no-leftshift\", \"Description\": \"Do not left-shift variants safely.\"}, {\"Parameter\": \"--decompose\", \"Description\": \"Decompose variants into primitives. This results in more granular counts.\"}, {\"Parameter\": \"-D\", \"Description\": \"Do not decompose variants into primitives.\"}, {\"Parameter\": \"--no-decompose\", \"Description\": \"Do not decompose variants into primitives.\"}, {\"Parameter\": \"--bcftools-norm\", \"Description\": \"Enable preprocessing through bcftools norm -c x -D (requires external preprocessing to be switched on).\"}, {\"Parameter\": \"--fixchr\", \"Description\": \"Add chr prefix to VCF records where necessary (default: auto, attempt to match reference).\"}, {\"Parameter\": \"--no-fixchr\", \"Description\": \"Do not add chr prefix to VCF records (default: auto, attempt to match reference).\"}, {\"Parameter\": \"--bcf\", \"Description\": \"Use BCF internally. This is the default when the input file is in BCF format already. Using BCF can speed up temp file access, but may fail for VCF files that have broken headers or records that don't comply with the header.\"}, {\"Parameter\": \"--somatic\", \"Description\": \"Assume the input file is a somatic call file and squash all columns into one, putting all FORMATs into INFO + use half genotypes (see also --set-gt). This will replace all sample columns and replace them with a single one.\"}, {\"Parameter\": \"--set-gt\", \"Description\": \"This is used to treat Strelka somatic files Possible values for this parameter: half / hemi / het / hom / half to assign one of the following genotypes to the resulting sample: 1 | 0/1 | 1/1 | ./1. This will replace all sample columns and replace them with a single one.\"}, {\"Parameter\": \"--filter-nonref\", \"Description\": \"Remove any variants genotyped as <NON_REF>.\"}, {\"Parameter\": \"--convert-gvcf-to-vcf\", \"Description\": \"Convert the input set from genome VCF format to a VCF before processing.\"}, {\"Parameter\": \"--gender\", \"Description\": \"Specify sex. This determines how haploid calls on chrX get treated: for male samples, all non-ref calls (in the truthset only when running through hap.py) are given a 1/1 genotype.\"}, {\"Parameter\": \"--convert-gvcf-truth\", \"Description\": \"Convert the truth set from genome VCF format to a VCF before processing.\"}, {\"Parameter\": \"--convert-gvcf-query\", \"Description\": \"Convert the query set from genome VCF format to a VCF before processing.\"}, {\"Parameter\": \"--preprocess-truth\", \"Description\": \"Preprocess truth file with same settings as query (default is to accept truth in original format).\"}, {\"Parameter\": \"--usefiltered-truth\", \"Description\": \"Use filtered variant calls in truth file (by default, only PASS calls in the truth file are used)\"}, {\"Parameter\": \"--preprocessing-window-size\", \"Description\": \"Preprocessing window size (variants further apart than that size are not expected to interfere).\"}, {\"Parameter\": \"--adjust-conf-regions\", \"Description\": \"Adjust confident regions to include variant locations. Note this will only include variants that are included in the CONF regions already when viewing with bcftools; this option only makes sure insertions are padded correctly in the CONF regions (to capture these, both the base before and after must be contained in the bed file).\"}, {\"Parameter\": \"--no-adjust-conf-regions\", \"Description\": \"Do not adjust confident regions for insertions.\"}, {\"Parameter\": \"--unhappy\", \"Description\": \"Disable haplotype comparison (only count direct GT matches as TP).\"}, {\"Parameter\": \"--no-haplotype-comparison\", \"Description\": \"Disable haplotype comparison (only count direct GT matches as TP).\"}, {\"Parameter\": \"-w\", \"Description\": \"Minimum distance between variants such that they fall into the same superlocus.\"}, {\"Parameter\": \"--window-size\", \"Description\": \"Minimum distance between variants such that they fall into the same superlocus.\"}, {\"Parameter\": \"--xcmp-enumeration-threshold\", \"Description\": \"Enumeration threshold / maximum number of sequences to enumerate per block.\"}, {\"Parameter\": \"--xcmp-expand-hapblocks\", \"Description\": \"Expand haplotype blocks by this many basepairs left and right.\"}, {\"Parameter\": \"--threads\", \"Description\": \"Number of threads to use.\"}, {\"Parameter\": \"--engine\", \"Description\": \"Comparison engine to use.\"}, {\"Parameter\": \"--engine-vcfeval-path\", \"Description\": \"This parameter should give the path to the \\\"rtg\\\" executable. The default is rtg\"}, {\"Parameter\": \"--engine-vcfeval-template\", \"Description\": \"Vcfeval needs the reference sequence formatted in its own file format (SDF -- run rtg format -o ref.SDF ref.fa). You can specify this here to save time when running hap.py with vcfeval. If no SDF folder is specified, hap.py will create a temporary one.\"}, {\"Parameter\": \"--scmp-distance\", \"Description\": \"For distance-based matching (vcfeval and scmp), this is the distance between variants to use.\"}, {\"Parameter\": \"--lose-match-distance\", \"Description\": \"For distance-based matching (vcfeval and scmp), this is the distance between variants to use.\"}, {\"Parameter\": \"--logfile\", \"Description\": \"Write logging information into file rather than to stderr\"}, {\"Parameter\": \"--verbose\", \"Description\": \"Raise logging level from warning to info.\"}, {\"Parameter\": \"--quiet\", \"Description\": \"Set logging level to output errors only.\"}]}",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:751",
+        "label": "0.3.14",
+        "shape": "dot",
+        "color": "#97c2fc",
+        "size": 20,
+        "neo4j_labels": [
+            "Version"
+        ]
+    },
+    {
+        "versionID": "squigualiser0.6.4",
+        "Parameter": "{\"Command\": [{\"Parameter\": \"-h\", \"Description\": \"show this help message and exit\"}, {\"Parameter\": \"--help\", \"Description\": \"show this help message and exit\"}, {\"Parameter\": \"-v\", \"Description\": \"show program's version number and exit\"}, {\"Parameter\": \"--version\", \"Description\": \"show program's version number and exit\"}, {\"Parameter\": \"plot\", \"Description\": \"Plot read/reference - signal alignments.\"}, {\"Parameter\": \"reform\", \"Description\": \"Convert basecaller's move table to ss string format.\"}, {\"Parameter\": \"realign\", \"Description\": \"Realign signal to reference using cigar string and the move table.\"}, {\"Parameter\": \"plot_pileup\", \"Description\": \"Plot a reference - signal alignment pileup.\"}, {\"Parameter\": \"plot_tracks\", \"Description\": \"Plot multiple reference - signal alignment pileup tracks.\"}, {\"Parameter\": \"calculate_offsets\", \"Description\": \"A utility program to calculate the most significant base index given a kmer model or a read - signal alignment.\"}, {\"Parameter\": \"metric\", \"Description\": \"A utility program to calculate some statistics of the signal alignment.\"}, {\"Parameter\": \"plot_signal\", \"Description\": \"A utility program to plot signal from a slow5 file.\"}]}",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:648",
+        "label": "0.6.4",
+        "shape": "dot",
+        "color": "#97c2fc",
+        "size": 20,
+        "neo4j_labels": [
+            "Version"
+        ]
+    },
+    {
+        "versionID": "manta_sv1.2.1",
+        "Parameter": "{\"Command\": [{\"Parameter\": \"--version\", \"Description\": \"show program's version number and exit\"}, {\"Parameter\": \"-h, --help\", \"Description\": \"show this help message and exit\"}, {\"Parameter\": \"--config=FILE\", \"Description\": \"provide a configuration file to override defaults in global config file (/home/houyufei/miniconda3/envs/tmp_manta_a823b5d8/share/manta-1.2.1-0/bin/configManta.py .ini)\"}, {\"Parameter\": \"--allHelp\", \"Description\": \"show all extended/hidden options\"}, {\"Parameter\": \"--bam=FILE, --normalBam=FILE\", \"Description\": \"Normal sample BAM or CRAM file. May be specified more once, multiple inputs will be treated as each BAM file representing a different sample. [optional] (no default)\"}, {\"Parameter\": \"--tumorBam=FILE, --tumourBam=FILE\", \"Description\": \"Tumor sample BAM or CRAM file. Only up to one tumor bam file accepted. [optional] (no default)\"}, {\"Parameter\": \"--exome\", \"Description\": \"Set options for WES input: turn off depth filters\"}, {\"Parameter\": \"--rna\", \"Description\": \"Set options for RNA-Seq input. Must specify exactly one bam input file\"}, {\"Parameter\": \"--unstrandedRNA\", \"Description\": \"Set if RNA-Seq input is unstranded: Allows splice- junctions on either strand\"}, {\"Parameter\": \"--outputContig\", \"Description\": \"Output assembled contig sequences in VCF file\"}, {\"Parameter\": \"--referenceFasta=FILE\", \"Description\": \"samtools-indexed reference fasta file [required]\"}, {\"Parameter\": \"--runDir=DIR\", \"Description\": \"Run script and run output will be written to this directory [required] (default: MantaWorkflow)\"}, {\"Parameter\": \"--existingAlignStatsFile=FILE\", \"Description\": \"Pre-calculated alignment statistics file. Skips alignment stats calculation.\"}, {\"Parameter\": \"--scanSizeMb=INT\", \"Description\": \"Maximum sequence region size (in megabases) scanned by each task during SV Locus graph generation. (default: 12)\"}, {\"Parameter\": \"--callRegions=CALLREGIONSBED\", \"Description\": \"Optionally provide a bgzip-compressed/tabix-indexed BED file containing the set of regions to call. No VCF output will be provided outside of these regions. The full genome will still be used to estimate statistics from the input (such as expected fragment size distribution). Only one BED file may be specified. (default: call the entire genome)\"}, {\"Parameter\": \"--region=REGION\", \"Description\": \"Limit the analysis to a region of the genome for debugging purposes. If this argument is provided multiple times all specified regions will be analyzed together. All regions must be non-overlapping to get a meaningful result. Examples: '--region chr20' (whole chromosome), '--region chr2:100-2000 --region chr3:2500-3000' (two regions)'\"}]}",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:60",
+        "label": "1.2.1",
+        "shape": "dot",
+        "color": "#97c2fc",
+        "size": 20,
+        "neo4j_labels": [
+            "Version"
+        ]
+    },
+    {
+        "versionID": "picard_tools2.21.1",
+        "Parameter": "{\"Command\": [{\"Parameter\": \"-h\", \"Description\": \"help\"}]}",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:563",
+        "label": "2.21.1",
+        "shape": "dot",
+        "color": "#97c2fc",
+        "size": 20,
+        "neo4j_labels": [
+            "Version"
+        ]
+    },
+    {
+        "output": [],
+        "input": [],
+        "publication": "[]",
+        "name": "Picard",
+        "topic": [
+            "Sequencing",
+            "Data management"
+        ],
+        "description": "A set of command line tools for manipulating high-throughput sequencing (HTS) data in formats such as SAM/BAM/CRAM and VCF. Available as a standalone program or within the GATK4 program.",
+        "links": [],
+        "language": [
+            "Java"
+        ],
+        "operation": [
+            "Genetic variation analysis"
+        ],
+        "operatingSystem": [
+            "Linux",
+            "Mac"
+        ],
+        "toolType": [
+            "Suite"
+        ],
+        "biotoolID": "picard_tools",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:562",
+        "label": "Picard",
+        "shape": "dot",
+        "color": "#fb7e81",
+        "size": 30,
+        "neo4j_labels": [
+            "Tool"
+        ]
+    },
+    {
+        "versionID": "freebayes0.9.21.7",
+        "Parameter": "{\"Command\": [{\"Parameter\": \"-h --help\", \"Description\": \"Prints this help dialog.\"}, {\"Parameter\": \"--version\", \"Description\": \"Prints the release number and the git commit id.\"}, {\"Parameter\": \"-b --bam FILE\", \"Description\": \"Add FILE to the set of BAM files to be analyzed.\"}, {\"Parameter\": \"-L --bam-list FILE\", \"Description\": \"A file containing a list of BAM files to be analyzed.\"}, {\"Parameter\": \"-c --stdin\", \"Description\": \"Read BAM input on stdin.\"}, {\"Parameter\": \"-v --vcf FILE\", \"Description\": \"Output VCF-format results to FILE.\"}, {\"Parameter\": \"-f --fasta-reference FILE\", \"Description\": \"Use FILE as the reference sequence for analysis.\\nAn index file (FILE.fai) will be created if none exists.\\nIf neither --targets nor --region are specified, FreeBayes\\nwill analyze every position in this reference.\"}, {\"Parameter\": \"-t --targets FILE\", \"Description\": \"Limit analysis to targets listed in the BED-format FILE.\"}, {\"Parameter\": \"-r --region <chrom>:<start_position>-<end_position>\", \"Description\": \"Limit analysis to the specified region, 0-base coordinates,\\nend_position not included (same as BED format).\\nEither '-' or '..' maybe used as a separator.\"}, {\"Parameter\": \"-s --samples FILE\", \"Description\": \"Limit analysis to samples listed (one per line) in the FILE.\\nBy default FreeBayes will analyze all samples in its input\\nBAM files.\"}, {\"Parameter\": \"--populations FILE\", \"Description\": \"Each line of FILE should list a sample and a population which\\nit is part of.  The population-based bayesian inference model\\nwill then be partitioned on the basis of the populations.\"}, {\"Parameter\": \"-A --cnv-map FILE\", \"Description\": \"Read a copy number map from the BED file FILE, which has\\nthe format:\\nreference sequence, start, end, sample name, copy number\\n... for each region in each sample which does not have the\\ndefault copy number as set by --ploidy.\"}, {\"Parameter\": \"--trace FILE\", \"Description\": \"Output an algorithmic trace to FILE.\"}, {\"Parameter\": \"--failed-alleles FILE\", \"Description\": \"Write a BED file of the analyzed positions which do not\\npass --pvar to FILE.\"}, {\"Parameter\": \"-@ --variant-input VCF\", \"Description\": \"Use variants reported in VCF file as input to the algorithm.\\nVariants in this file will included in the output even if\\nthere is not enough support in the data to pass input filters.\"}, {\"Parameter\": \"-l --only-use-input-alleles\", \"Description\": \"Only provide variant calls and genotype likelihoods for sites\\nand alleles which are provided in the VCF input, and provide\\noutput in the VCF for all input alleles, not just those which\\nhave support in the data.\"}, {\"Parameter\": \"--haplotype-basis-alleles VCF\", \"Description\": \"When specified, only variant alleles provided in this input\\nVCF will be used for the construction of complex or haplotype\\nalleles.\"}, {\"Parameter\": \"--report-all-haplotype-alleles\", \"Description\": \"At sites where genotypes are made over haplotype alleles,\\nprovide information about all alleles in output, not only\\nthose which are called.\"}, {\"Parameter\": \"--report-monomorphic\", \"Description\": \"Report even loci which appear to be monomorphic, and report all\\nconsidered alleles, even those which are not in called genotypes.\\nLoci which do not have any potential alternates have '.' for ALT.\"}, {\"Parameter\": \"-P --pvar N\", \"Description\": \"Report sites if the probability that there is a polymorphism\\nat the site is greater than N.  default: 0.0.  Note that post-\\nfiltering is generally recommended over the use of this parameter.\"}, {\"Parameter\": \"-T --theta N\", \"Description\": \"The expected mutation rate or pairwise nucleotide diversity\\namong the population under analysis.  This serves as the\\nsingle parameter to the Ewens Sampling Formula prior model\\ndefault: 0.001\"}, {\"Parameter\": \"-p --ploidy N\", \"Description\": \"Sets the default ploidy for the analysis to N.  default: 2\"}, {\"Parameter\": \"-J --pooled-discrete\", \"Description\": \"Assume that samples result from pooled sequencing.\\nModel pooled samples using discrete genotypes across pools.\\nWhen using this flag, set --ploidy to the number of\\nalleles in each sample or use the --cnv-map to define\\nper-sample ploidy.\"}, {\"Parameter\": \"-K --pooled-continuous\", \"Description\": \"Output all alleles which pass input filters, regardles of\\ngenotyping outcome or model.\"}, {\"Parameter\": \"-Z --use-reference-allele\", \"Description\": \"This flag includes the reference allele in the analysis as\\nif it is another sample from the same population.\"}, {\"Parameter\": \"--reference-quality MQ,BQ\", \"Description\": \"Assign mapping quality of MQ to the reference allele at each\\nsite and base quality of BQ.  default: 100,60\"}, {\"Parameter\": \"-I --no-snps\", \"Description\": \"Ignore SNP alleles.\"}, {\"Parameter\": \"-i --no-indels\", \"Description\": \"Ignore insertion and deletion alleles.\"}, {\"Parameter\": \"-X --no-mnps\", \"Description\": \"Ignore multi-nuceotide polymorphisms, MNPs.\"}, {\"Parameter\": \"-u --no-complex\", \"Description\": \"Ignore complex events (composites of other classes).\"}, {\"Parameter\": \"-n --use-best-n-alleles N\", \"Description\": \"Evaluate only the best N SNP alleles, ranked by sum of\\nsupporting quality scores.  (Set to 0 to use all; default: all)\"}, {\"Parameter\": \"-E --max-complex-gap N\", \"Description\": \"Allow haplotype calls with contiguous embedded matches of up\\nto this length.  (default: 3)\"}, {\"Parameter\": \"--haplotype-length N\", \"Description\": \"Allow haplotype calls with contiguous embedded matches of up\\nto this length.  (default: 3)\"}, {\"Parameter\": \"--min-repeat-size N\", \"Description\": \"When assembling observations across repeats, require the total repeat\\nlength at least this many bp.  (default: 5)\"}, {\"Parameter\": \"--min-repeat-entropy N\", \"Description\": \"To detect interrupted repeats, build across sequence until it has\\nentropy > N bits per bp.  (default: 0, off)\"}, {\"Parameter\": \"--no-partial-observations\", \"Description\": \"Exclude observations which do not fully span the dynamically-determined\\ndetection window.  (default, use all observations, dividing partial\\nsupport across matching haplotypes when generating haplotypes.)\"}, {\"Parameter\": \"-O --dont-left-align-indels\", \"Description\": \"Turn off left-alignment of indels, which is enabled by default.\"}, {\"Parameter\": \"-4 --use-duplicate-reads\", \"Description\": \"Include duplicate-marked alignments in the analysis.\\ndefault: exclude duplicates marked as such in alignments\"}, {\"Parameter\": \"-m --min-mapping-quality Q\", \"Description\": \"Exclude alignments from analysis if they have a mapping\\nquality less than Q.  default: 1\"}, {\"Parameter\": \"-q --min-base-quality Q\", \"Description\": \"Exclude alleles from analysis if their supporting base\\nquality is less than Q.  default: 0\"}, {\"Parameter\": \"-R --min-supporting-allele-qsum Q\", \"Description\": \"Consider any allele in which the sum of qualities of supporting\\nobservations is at least Q.  default: 0\"}, {\"Parameter\": \"-Y --min-supporting-mapping-qsum Q\", \"Description\": \"Consider any allele in which and the sum of mapping qualities of\\nsupporting reads is at least Q.  default: 0\"}, {\"Parameter\": \"-Q --mismatch-base-quality-threshold Q\", \"Description\": \"Count mismatches toward --read-mismatch-limit if the base\\nquality of the mismatch is >= Q.  default: 10\"}, {\"Parameter\": \"-U --read-mismatch-limit N\", \"Description\": \"Exclude reads with more than N mismatches where each mismatch\\nhas base quality >= mismatch-base-quality-threshold.\\ndefault: ~unbounded\"}, {\"Parameter\": \"-z --read-max-mismatch-fraction N\", \"Description\": \"Exclude reads with more than N [0,1] fraction of mismatches where\\neach mismatch has base quality >= mismatch-base-quality-threshold\\ndefault: 1.0\"}, {\"Parameter\": \"-$ --read-snp-limit N\", \"Description\": \"Exclude reads with more than N base mismatches, ignoring gaps\\nwith quality >= mismatch-base-quality-threshold.\\ndefault: ~unbounded\"}, {\"Parameter\": \"-e --read-indel-limit N\", \"Description\": \"Exclude reads with more than N separate gaps.\\ndefault: ~unbounded\"}, {\"Parameter\": \"-0 --standard-filters\", \"Description\": \"Use stringent input base and mapping quality filters\\nEquivalent to -m 30 -q 20 -R 0 -S 0\"}, {\"Parameter\": \"-F --min-alternate-fraction N\", \"Description\": \"Require at least this fraction of observations supporting\\nan alternate allele within a single individual in the\\nin order to evaluate the position.  default: 0.2\"}, {\"Parameter\": \"-C --min-alternate-count N\", \"Description\": \"Require at least this count of observations supporting\\nan alternate allele within a single individual in order\\nto evaluate the position.  default: 2\"}, {\"Parameter\": \"-3 --min-alternate-qsum N\", \"Description\": \"Require at least this sum of quality of observations supporting\\nan alternate allele within a single individual in order\\nto evaluate the position.  default: 0\"}, {\"Parameter\": \"-G --min-alternate-total N\", \"Description\": \"Require at least this count of observations supporting\\nan alternate allele within the total population in order\\nto use the allele in analysis.  default: 1\"}, {\"Parameter\": \"-! --min-coverage N\", \"Description\": \"Require at least this coverage to process a site.  default: 0\"}, {\"Parameter\": \"-k --no-population-priors\", \"Description\": \"Equivalent to --pooled-discrete --hwe-priors-off and removal of\\nEwens Sampling Formula component of priors.\"}, {\"Parameter\": \"-w --hwe-priors-off\", \"Description\": \"Disable estimation of the probability of the combination\\narising under HWE given the allele frequency as estimated\\nby observation frequency.\"}, {\"Parameter\": \"-V --binomial-obs-priors-off\", \"Description\": \"Disable incorporation of prior expectations about observations.\\nUses read placement probability, strand balance probability,\\nand read position (5'-3') probability.\"}, {\"Parameter\": \"-a --allele-balance-priors-off\", \"Description\": \"Disable use of aggregate probability of observation balance between alleles\\nas a component of the priors.\"}, {\"Parameter\": \"--observation-bias FILE\", \"Description\": \"Read length-dependent allele observation biases from FILE.\\nThe format is [length] [alignment efficiency relative to reference]\\nwhere the efficiency is 1 if there is no relative observation bias.\"}, {\"Parameter\": \"--base-quality-cap Q\", \"Description\": \"Limit estimated observation quality by capping base quality at Q.\"}, {\"Parameter\": \"--prob-contamination F\", \"Description\": \"An estimate of contamination to use for all samples.  default: 10e-9\"}, {\"Parameter\": \"--legacy-gls\", \"Description\": \"Use legacy (polybayes equivalent) genotype likelihood calculations\"}, {\"Parameter\": \"--contamination-estimates FILE\", \"Description\": \"A file containing per-sample estimates of contamination, such as\\nthose generated by VerifyBamID.  The format should be:\\nsample p(read=R|genotype=AR) p(read=A|genotype=AA)\\nSample '*' can be used to set default contamination estimates.\"}, {\"Parameter\": \"--report-genotype-likelihood-max\", \"Description\": \"Report genotypes using the maximum-likelihood estimate provided\\nfrom genotype likelihoods.\"}, {\"Parameter\": \"-B --genotyping-max-iterations N\", \"Description\": \"Iterate no more than N times during genotyping step. default: 1000.\"}, {\"Parameter\": \"--genotyping-max-banddepth N\", \"Description\": \"Integrate no deeper than the Nth best genotype by likelihood when\\ngenotyping. default: 6.\"}, {\"Parameter\": \"-W --posterior-integration-limits N,M\", \"Description\": \"Integrate all genotype combinations in our posterior space\\nwhich include no more than N samples with their Mth best\\ndata likelihood. default: 1,3.\"}, {\"Parameter\": \"-N --exclude-unobserved-genotypes\", \"Description\": \"Skip sample genotypings for which the sample has no supporting reads.\"}, {\"Parameter\": \"-S --genotype-variant-threshold N\", \"Description\": \"Limit posterior integration to samples where the second-best\\ngenotype likelihood is no more than log(N) from the highest\\ngenotype likelihood for the sample.  default: ~unbounded\"}, {\"Parameter\": \"-j --use-mapping-quality\", \"Description\": \"Use mapping quality of alleles when calculating data likelihoods.\"}, {\"Parameter\": \"-H --harmonic-indel-quality\", \"Description\": \"Use a weighted sum of base qualities around an indel, scaled by the\\ndistance from the indel.  By default use a minimum BQ in flanking sequence.\"}, {\"Parameter\": \"-D --read-dependence-factor N\", \"Description\": \"Incorporate non-independence of reads by scaling successive\\nobservations by this factor during data likelihood\\ncalculations.  default: 0.9\"}, {\"Parameter\": \"-= --genotype-qualities\", \"Description\": \"Calculate the marginal probability of genotypes and report as GQ in\\neach sample field in the VCF output.\"}, {\"Parameter\": \"-d --debug\", \"Description\": \"Print debugging output.\"}, {\"Parameter\": \"-dd\", \"Description\": \"Print more verbose debugging output (requires \\\"make DEBUG\\\")\"}]}",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:444",
+        "label": "0.9.21.7",
+        "shape": "dot",
+        "color": "#97c2fc",
+        "size": 20,
+        "neo4j_labels": [
+            "Version"
+        ]
+    },
+    {
+        "versionID": "cnvkit0.7.3",
+        "Parameter": "{\"Command\": [{\"Parameter\": \"batch\", \"Description\": \"Run the complete CNVkit pipeline on one or more BAM files.\"}, {\"Parameter\": \"target\", \"Description\": \"Transform bait intervals into targets more suitable for CNVkit.\"}, {\"Parameter\": \"access\", \"Description\": \"List the locations of accessible sequence regions in a FASTA file.\"}, {\"Parameter\": \"antitarget\", \"Description\": \"Derive a background/antitarget BED file from a target BED file.\"}, {\"Parameter\": \"coverage\", \"Description\": \"Calculate coverage in the given regions from BAM read depths.\"}, {\"Parameter\": \"reference\", \"Description\": \"Compile a coverage reference from the given files (normal samples).\"}, {\"Parameter\": \"fix\", \"Description\": \"Combine target and antitarget coverages and correct for biases. Adjust raw coverage data according to the given reference, correct potential biases and re-center.\"}, {\"Parameter\": \"segment\", \"Description\": \"Infer copy number segments from the given coverage table.\"}, {\"Parameter\": \"call\", \"Description\": \"Call copy number variants from segmented log2 ratios.\"}, {\"Parameter\": \"diagram\", \"Description\": \"Draw copy number (log2 coverages, CBS calls) on chromosomes as a diagram. If both the raw probes and segments are given, show them side-by-side on each chromosome (segments on the left side, probes on the right side).\"}, {\"Parameter\": \"scatter\", \"Description\": \"Plot probe log2 coverages and segmentation calls together.\"}, {\"Parameter\": \"loh\", \"Description\": \"[DEPRECATED] Plot allelic frequencies at each variant position in a VCF file. Divergence from 0.5 indicates loss of heterozygosity in a tumor sample.\"}, {\"Parameter\": \"heatmap\", \"Description\": \"Plot copy number for multiple samples as a heatmap.\"}, {\"Parameter\": \"breaks\", \"Description\": \"List the targeted genes in which a copy number breakpoint occurs.\"}, {\"Parameter\": \"gainloss\", \"Description\": \"Identify targeted genes with copy number gain or loss.\"}, {\"Parameter\": \"gender\", \"Description\": \"Guess samples' gender from the relative coverage of chromosome X.\"}, {\"Parameter\": \"metrics\", \"Description\": \"Compute coverage deviations and other metrics for self-evaluation.\"}, {\"Parameter\": \"segmetrics\", \"Description\": \"Compute segment-level metrics from bin-level log2 ratios.\"}, {\"Parameter\": \"import-picard\", \"Description\": \"Convert Picard CalculateHsMetrics tabular output to CNVkit .cnn files. The input file is generated by the PER_TARGET_COVERAGE option in the CalculateHsMetrics script in Picard tools.\"}, {\"Parameter\": \"import-seg\", \"Description\": \"Convert a SEG file to CNVkit .cns files.\"}, {\"Parameter\": \"import-theta\", \"Description\": \"Convert THetA output to a BED-like, CNVkit-like tabular format. Equivalently, use the THetA results file to convert CNVkit .cns segments to integer copy number calls.\"}, {\"Parameter\": \"export\", \"Description\": \"Convert CNVkit output files to another format.\"}, {\"Parameter\": \"version\", \"Description\": \"Display this program's version.\"}, {\"Parameter\": \"-h\", \"Description\": \"show this help message and exit\"}, {\"Parameter\": \"--help\", \"Description\": \"show this help message and exit\"}]}",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:64",
+        "label": "0.7.3",
+        "shape": "dot",
+        "color": "#97c2fc",
+        "size": 20,
+        "neo4j_labels": [
+            "Version"
+        ]
+    },
+    {
+        "versionID": "manta_sv1.0.0",
+        "Parameter": "{\"Command\": [{\"Parameter\": \"--version\", \"Description\": \"show program's version number and exit\"}, {\"Parameter\": \"-h, --help\", \"Description\": \"show this help message and exit\"}, {\"Parameter\": \"--config=FILE\", \"Description\": \"provide a configuration file to override defaults in global config file (/home/houyufei/miniconda3/envs/tmp _manta_99f5ef48/bin/configManta.py.ini)\"}, {\"Parameter\": \"--allHelp\", \"Description\": \"show all extended/hidden options\"}, {\"Parameter\": \"--bam=FILE, --normalBam=FILE\", \"Description\": \"Normal sample BAM or CRAM file. May be specified more than once, multiple inputs will be treated as each BAM file representing a different sample. [optional] (no default)\"}, {\"Parameter\": \"--tumorBam=FILE, --tumourBam=FILE\", \"Description\": \"Tumor sample BAM or CRAM file. Only up to one tumor bam file accepted. [optional] (no default)\"}, {\"Parameter\": \"--exome\", \"Description\": \"Set options for WES input: turn off depth filters\"}, {\"Parameter\": \"--rna\", \"Description\": \"Set options for RNA-Seq input: turn off depth filters and don't treat anomalous reads as SV evidence when the proper-pair bit is set.\"}, {\"Parameter\": \"--unstrandedRNA\", \"Description\": \"Set if RNA-Seq input is unstranded: Allows splice- junctions on either strand\"}, {\"Parameter\": \"--referenceFasta=FILE\", \"Description\": \"samtools-indexed reference fasta file [required]\"}, {\"Parameter\": \"--runDir=DIR\", \"Description\": \"Run script and run output will be written to this directory [required] (default: MantaWorkflow)\"}, {\"Parameter\": \"--scanSizeMb=INT\", \"Description\": \"Maximum sequence region size (in megabases) scanned by each task during SV Locus graph generation. (default: 12)\"}, {\"Parameter\": \"--region=REGION\", \"Description\": \"Limit the analysis to a region of the genome for debugging purposes. If this argument is provided multiple times all specified regions will be analyzed together. All regions must be non-overlapping to get a meaningful result. Examples: '--region chr20' (whole chromosome), '--region chr2:100-2000 --region chr3:2500-3000' (two regions)'\"}]}",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:61",
+        "label": "1.0.0",
+        "shape": "dot",
+        "color": "#97c2fc",
+        "size": 20,
+        "neo4j_labels": [
+            "Version"
+        ]
+    },
+    {
+        "versionID": "igvtools2.17.3",
+        "Parameter": "{\"Command\": [{\"Parameter\": \"version\", \"Description\": \"print the version number\"}, {\"Parameter\": \"sort\", \"Description\": \"sort an alignment file by start position.\"}, {\"Parameter\": \"index\", \"Description\": \"index an alignment file\"}, {\"Parameter\": \"toTDF\", \"Description\": \"convert an input file (cn, gct, wig) to tiled data format (tdf)\"}, {\"Parameter\": \"count\", \"Description\": \"compute coverage density for an alignment file\"}, {\"Parameter\": \"formatexp\", \"Description\": \"center, scale, and log2 normalize an expression file\"}, {\"Parameter\": \"gui\", \"Description\": \"Start the gui\"}, {\"Parameter\": \"help <command>\", \"Description\": \"display this help message, or help on a specific command\"}]}",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:308",
+        "label": "2.17.3",
+        "shape": "dot",
+        "color": "#97c2fc",
+        "size": 20,
+        "neo4j_labels": [
+            "Version"
+        ]
+    },
+    {
+        "output": [],
+        "input": [],
+        "publication": "[{\"doi\": \"10.1093/bib/bbs017\", \"title\": \"Integrative Genomics Viewer (IGV): High-performance genomics data visualization and exploration\", \"abstract\": \"Data visualization is an essential component of genomic data analysis. However, the size and diversity of the data sets produced by today's sequencing and array-based profiling methods present major challenges to visualization tools. The Integrative Genomics Viewer (IGV) is a high-performance viewer that efficiently handles large heterogeneous data sets, while providing a smooth and intuitive user experience at all levels of genome resolution. A key characteristic of IGV is its focus on the integrative nature of genomic studies, with support for both array-based and next-generation sequencing data, and the integration of clinical and phenotypic data. Although IGV is often used to view genomic data from public sources, its primary emphasis is to support researchers who wish to visualize and explore their own data sets or those from colleagues. To that end, IGV supports flexible loading of local and remote data sets, and is optimized to provide high-performance data visualization and exploration on standard desktop systems. © The Author(s) 2012. Published by Oxford University Press.\"}]",
+        "name": "IGVtools",
+        "topic": [
+            "Sequence analysis"
+        ],
+        "description": "The igvtools utility provides a set of tools for pre-processing data files.",
+        "links": [
+            "https://github.com/igvteam/igv/",
+            "https://github.com/igvteam/igv/issues"
+        ],
+        "language": [
+            "Java"
+        ],
+        "operation": [
+            "Formatting",
+            "Sequence feature comparison"
+        ],
+        "operatingSystem": [
+            "Linux",
+            "Windows",
+            "Mac"
+        ],
+        "toolType": [
+            "Command-line tool",
+            "Plug-in"
+        ],
+        "biotoolID": "igvtools",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:307",
+        "label": "IGVtools",
+        "shape": "dot",
+        "color": "#fb7e81",
+        "size": 30,
+        "neo4j_labels": [
+            "Tool"
+        ]
+    },
+    {
+        "versionID": "TOBIAS0.17.3",
+        "Parameter": "{\"Command\": [{\"Parameter\": \"ATACorrect\", \"Description\": \"Correct reads with regards to Tn5 sequence bias\"}, {\"Parameter\": \"ScoreBigwig\", \"Description\": \"Calculate scores such as footprints from cutsites\"}, {\"Parameter\": \"BINDetect\", \"Description\": \"Detect TF binding from footprints and motifs\"}, {\"Parameter\": \"TFBScan\", \"Description\": \"Identify positions of TFBS given sequence and motifs\"}, {\"Parameter\": \"FormatMotifs\", \"Description\": \"Utility to deal with motif files\"}, {\"Parameter\": \"ClusterMotifs\", \"Description\": \"Cluster motifs by similarity\"}, {\"Parameter\": \"ScoreBed\", \"Description\": \"Score .bed-file with signal from .bigwig-file(s)\"}, {\"Parameter\": \"SubMerge\", \"Description\": \"Get all TFBS in a list of regions, merged into one file\"}, {\"Parameter\": \"PlotAggregate\", \"Description\": \"Aggregate of .bigwig-signal across TF binding sites\"}, {\"Parameter\": \"PlotHeatmap\", \"Description\": \"Heatmap of .bigwig-signal across TF binding sites\"}, {\"Parameter\": \"PlotChanges\", \"Description\": \"Plot changes in TF binding across multiple conditions (from BINDetect output)\"}, {\"Parameter\": \"PlotTracks\", \"Description\": \"Plot genomic tracks using the svist4get package\"}, {\"Parameter\": \"DownloadData\", \"Description\": \"Download test data for the TOBIAS tools\"}, {\"Parameter\": \"MergePDF\", \"Description\": \"Merge pdf files to one\"}, {\"Parameter\": \"MaxPos\", \"Description\": \"Get .bed-positions of highest bigwig signal within .bed-regions\"}, {\"Parameter\": \"SubsampleBam\", \"Description\": \"Subsample a .bam-file using samtools\"}, {\"Parameter\": \"CreateNetwork\", \"Description\": \"Create TF-gene network from annotated TFBS\"}, {\"Parameter\": \"Log2Table\", \"Description\": \"Convert logs from PlotAggregate to tab-delimitered tables of footprint stats\"}, {\"Parameter\": \"FilterFragments\", \"Description\": \"Tool for filtering fragments from a .bam-file based on the overlap of reads with .bed-regions\"}, {\"Parameter\": \"--help\", \"Description\": \"For help on each tool, please run: TOBIAS <TOOLNAME> --help\"}, {\"Parameter\": \"--version\", \"Description\": \"For version number: TOBIAS --version\"}]}",
+        "id": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:508",
+        "label": "0.17.3",
+        "shape": "dot",
+        "color": "#97c2fc",
+        "size": 20,
+        "neo4j_labels": [
+            "Version"
+        ]
+    }
+]
+);
+
+        const edges = new vis.DataSet(
+[
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:57",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:58",
+        "label": "HAS_VERSION",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:57",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:59",
+        "label": "HAS_VERSION",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:59",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:267",
+        "label": "WORKFLOW",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:264",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:267",
+        "label": "HAS_VERSION",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:59",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:267",
+        "label": "WORKFLOW",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:267",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:301",
+        "label": "WORKFLOW",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:442",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:59",
+        "label": "WORKFLOW",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:439",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:442",
+        "label": "HAS_VERSION",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:565",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:442",
+        "label": "WORKFLOW",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:565",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:442",
+        "label": "WORKFLOW",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:59",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:66",
+        "label": "WORKFLOW",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:63",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:66",
+        "label": "HAS_VERSION",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:62",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:66",
+        "label": "WORKFLOW",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:440",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:66",
+        "label": "WORKFLOW",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:66",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:265",
+        "label": "WORKFLOW",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:66",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:300",
+        "label": "WORKFLOW",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:441",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:66",
+        "label": "WORKFLOW",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:66",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:754",
+        "label": "WORKFLOW",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:467",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:59",
+        "label": "WORKFLOW",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:464",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:467",
+        "label": "HAS_VERSION",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:463",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:467",
+        "label": "WORKFLOW",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:467",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:751",
+        "label": "WORKFLOW",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:648",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:467",
+        "label": "WORKFLOW",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:57",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:60",
+        "label": "HAS_VERSION",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:563",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:60",
+        "label": "WORKFLOW",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:562",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:563",
+        "label": "HAS_VERSION",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:60",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:444",
+        "label": "WORKFLOW",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:439",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:444",
+        "label": "HAS_VERSION",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:444",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:64",
+        "label": "WORKFLOW",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:57",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:61",
+        "label": "HAS_VERSION",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:57",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:62",
+        "label": "HAS_VERSION",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:308",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:62",
+        "label": "WORKFLOW",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:307",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:308",
+        "label": "HAS_VERSION",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:508",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:308",
+        "label": "WORKFLOW",
+        "arrows": "to"
+    },
+    {
+        "from": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:754",
+        "to": "4:c52c321e-e954-4fdd-b12e-d582c24a54b0:308",
+        "label": "WORKFLOW",
+        "arrows": "to"
+    }
+]
+);
+
+        const container = document.getElementById('kg-network');
+        const data = { nodes: nodes, edges: edges };
+        
+        const options = {
+            nodes: { font: { size: 16 } },
+            edges: { font: { size: 12, align: 'middle' }, color: '#888' },
+            physics: { barnesHut: { gravitationalConstant: -3000 } },
+            interaction: {
+                hover: true,
+                tooltipDelay: 200
+            }
+        };
+
+        const network = new vis.Network(container, data, options);
+
+        // ==========================================
+        // 2. 知识图谱事件监听 (Hover & Blur)
+        // ==========================================
+        const infoCard = document.getElementById('info-card');
+        const cardTitle = document.getElementById('card-title');
+        const cardContent = document.getElementById('card-content');
+
+        // 新增：用于记录当前被点击固定的节点 ID
+        let pinnedNodeId = null;
+
+        function showNodeInfo(nodeId) {
+            const nodeData = nodes.get(nodeId);
+            if (nodeData) {
+                cardTitle.innerText = nodeData.label || "未知节点";
+                
+                const ignoreKeys = ['id', 'label', 'shape', 'color', 'size', 'x', 'y'];
+                let contentHTML = '<ul class="list-unstyled mb-0">';
+
+                for (let key in nodeData) {
+                    if (nodeData.hasOwnProperty(key) && !ignoreKeys.includes(key)) {
+                        let value = nodeData[key];
+                        
+                        if (Array.isArray(value)) {
+                            value = value.join(', ');
+                        } 
+                        else if (typeof value === 'string' && (value.startsWith('{') || value.startsWith('['))) {
+                            try {
+                                const parsed = JSON.parse(value);
+                                // 这里对 Parameter 做了特殊解析
+                                if (parsed.Command && Array.isArray(parsed.Command)) {
+                                    value = parsed.Command.map(cmd => `<code>${cmd.Parameter}</code>: ${cmd.Description}`).join('<br>');
+                                } else {
+                                    value = JSON.stringify(parsed, null, 2).replace(/\n/g, '<br>').replace(/ /g, '&nbsp;');
+                                }
+                            } catch (e) {
+                                // 解析失败则保留原样
+                            }
+                        }
+
+                        if (value !== undefined && value !== null && value !== "") {
+                            contentHTML += `<li class="mb-2"><strong class="text-dark">${key}:</strong><br> ${value}</li>`;
+                        }
+                    }
+                }
+                contentHTML += '</ul>';
+
+                cardContent.innerHTML = contentHTML;
+                infoCard.style.borderLeftColor = nodeData.color || '#97c2fc'; 
+                infoCard.style.display = 'block';
+            }
+        }
+        
+        // 悬停时：如果没有固定节点，才更新并显示卡片
+        network.on("hoverNode", function (params) {
+            if (!pinnedNodeId) {
+                showNodeInfo(params.node);
+            }
+            network.canvas.body.container.style.cursor = 'pointer';
+        });
+
+        // 移出时：如果没有固定节点，才隐藏卡片
+        network.on("blurNode", function (params) {
+            if (!pinnedNodeId && infoCard) {
+                infoCard.style.display = 'none'; 
+            }
+            network.canvas.body.container.style.cursor = 'default';
+        });
+
+        // 点击时：切换固定状态
+        network.on("click", function (params) {
+            if (params.nodes.length > 0) {
+                const clickedNodeId = params.nodes[0];
+                if (pinnedNodeId === clickedNodeId) {
+                    // 如果点击的是已经固定的节点，则取消固定
+                    pinnedNodeId = null;
+                } else {
+                    // 如果点击的是新节点，则固定该节点并展示其信息
+                    pinnedNodeId = clickedNodeId;
+                    showNodeInfo(clickedNodeId);
+                }
+            } else {
+                // 如果点击了空白区域，取消固定并隐藏卡片
+                pinnedNodeId = null;
+                if (infoCard) infoCard.style.display = 'none';
+            }
+        });
+
+        // ==========================================
+        // 3. 渲染 Leaderboard 数据
+        // ==========================================
+        // ==========================================
+        // 3. 渲染打榜多组柱状图 (ECharts)
+        // ==========================================
+        
+        const colors = ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4'];
+        const models = ['Gemini 2.5 Flash', 'Qwen3 235B', 'GPT 5.1', 'Gemini 2.5 Pro', 'Qwen2.5 72B', 'Claude-Sonnet-4', 'BioGPT', 'BiomedGPT'];
+
+        const task1SeriesData = [
+            { value: [0.53, 0.92, 0.53, 0.55, 0.84, 0.95], name: 'Gemini 2.5 Flash' },
+            { value: [0.51, 0.91, 0.55, 0.51, 0.74, 0.89], name: 'Qwen3 235B' },
+            { value: [0.59, 0.94, 0.68, 0.53, 0.81, 0.91], name: 'GPT 5.1' },
+            { value: [0.55, 0.96, 0.69, 0.47, 0.83, 0.92], name: 'Gemini 2.5 Pro' },
+            { value: [0.47, 0.94, 0.63, 0.47, 0.58, 0.84], name: 'Qwen2.5 72B' },
+            { value: [0.52, 0.95, 0.57, 0.57, 0.80, 0.90], name: 'Claude-Sonnet-4' },
+            { value: [0.00, 0.00, 0.00, 0.00, 0.00, 0.00], name: 'BioGPT' },
+            { value: [0.18, 0.365, 0.22, 0.13, 0.32, 0.20], name: 'BiomedGPT' }
+        ];
+
+        const task2SeriesData = [
+            { value: [0.24, 0.41, 0.54, 0.16, 0.60, 0.86], name: 'Gemini 2.5 Flash' },
+            { value: [0.25, 0.38, 0.60, 0.12, 0.62, 0.85], name: 'Qwen3 235B' },
+            { value: [0.32, 0.39, 0.62, 0.13, 0.74, 0.86], name: 'GPT 5.1' },
+            { value: [0.29, 0.48, 0.60, 0.10, 0.80, 0.90], name: 'Gemini 2.5 Pro' },
+            { value: [0.12, 0.34, 0.46, 0.08, 0.48, 0.75], name: 'Qwen2.5 72B' },
+            { value: [0.24, 0.44, 0.37, 0.12, 0.69, 0.87], name: 'Claude-Sonnet-4' },
+            { value: [0.00, 0.00, 0.00, 0.00, 0.00, 0.00], name: 'BioGPT' },
+            { value: [0.13, 0.11, 0.31, 0.00, 0.24, 0.61], name: 'BiomedGPT' }
+        ];
+
+        const radarIndicator = [
+            { name: 'PD', max: 1 },
+            { name: 'PS', max: 1 },
+            { name: 'SR', max: 1 },
+            { name: 'VS', max: 1 },
+            { name: 'IO', max: 1 },
+            { name: 'TI', max: 1 }
+        ];
+
+        // 辅助函数：计算各个模型的均值
+        const calcAvg = (arr) => (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(3);
+
+        // 生成供柱状图使用的 Series（每个模型一个独立的系列以复用 Legend）
+        const buildBarSeries = (data) => data.map(item => ({
+            name: item.name,
+            type: 'bar',
+            data: [calcAvg(item.value)],
+            label: { show: true, position: 'top', formatter: '{c}', fontSize: 10 }
+        }));
+
+        // --- 初始化上方 雷达图+均值柱状图 1 ---
+        const radar1 = echarts.init(document.getElementById('radar1'));
+        radar1.setOption({
+            color: colors,
+            title: { text: 'Task 1: Syntax Understanding', left: 'center', top: '2%' },
+            tooltip: { trigger: 'item' },
+            legend: { top: '8%', type: 'scroll', data: models },
+            grid: { left: '55%', right: '5%', top: '22%', bottom: '10%' }, // 给右侧柱状图留位置
+            xAxis: { type: 'category', data: ['Average Score'], axisTick: { show: false } },
+            yAxis: { type: 'value', max: 1 },
+            radar: {
+                indicator: radarIndicator,
+                center: ['28%', '60%'], // 把雷达图移到左侧
+                radius: '60%'
+            },
+            series: [
+                {
+                    type: 'radar',
+                    data: task1SeriesData
+                },
+                ...buildBarSeries(task1SeriesData) // 注入柱状图 Series
+            ]
+        });
+
+        // --- 初始化上方 雷达图+均值柱状图 2 ---
+        const radar2 = echarts.init(document.getElementById('radar2'));
+        radar2.setOption({
+            color: colors,
+            title: { text: 'Task 2: Contextual Application ', left: 'center', top: '2%' },
+            tooltip: { trigger: 'item' },
+            legend: { top: '8%', type: 'scroll', data: models },
+            grid: { left: '55%', right: '5%', top: '22%', bottom: '10%' }, // 给右侧柱状图留位置
+            xAxis: { type: 'category', data: ['Average Score'], axisTick: { show: false } },
+            yAxis: { type: 'value', max: 1 },
+            radar: {
+                indicator: radarIndicator,
+                center: ['28%', '60%'], // 把雷达图移到左侧
+                radius: '60%'
+            },
+            series: [
+                {
+                    type: 'radar',
+                    data: task2SeriesData
+                },
+                ...buildBarSeries(task2SeriesData) // 注入柱状图 Series
+            ]
+        });
+
+        // --- 下方柱状图通用配置 ---
+        const commonBarOptions = {
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            legend: { type: 'scroll', bottom: 0, textStyle: { fontSize: 11 } },
+            grid: { left: '2%', right: '2%', bottom: '18%', top: '15%', containLabel: true },
+            color: colors
+        };
+
+        // --- 初始化下方 柱状图 1 ---
+        const chart1 = echarts.init(document.getElementById('chart1'));
+        chart1.setOption({
+            ...commonBarOptions,
+            title: { text: 'Task 3: Model Performance on Real-world Execution (Bio-Computational Efficiency Score)', left: 'center', textStyle: { fontSize: 14 } },
+            xAxis: { type: 'category', data: ['Easy','Medium','Hard'] },
+            yAxis: { type: 'value', max: 0.3},
+            series: [
+    { name: 'Qwen3 235B', type: 'bar', data: [0.086, 0.086, 0.024] },
+    { name: 'Qwen2.5 72B', type: 'bar', data: [0.068, 0.043, 0.000] },
+    { name: 'Gemini2.5 Pro', type: 'bar', data: [0.218, 0.169, 0.045] },
+    { name: 'Gemini2.5 Flash', type: 'bar', data: [0.174, 0.111, 0.036] },
+    { name: 'Plan-and-Execute', type: 'bar', data: [0.154, 0.090, 0.020] },
+    { name: 'ReAct', type: 'bar', data: [0.154, 0.118, 0.033] },
+    { name: 'AutoBA', type: 'bar', data: [0.157, 0.097, 0.025] },
+    { name: 'BioMaster', type: 'bar', data: [0.153, 0.117, 0.047] }
+]
+        });
+
+    
+
+        // --- 响应式重绘 ---
+        window.addEventListener('resize', function() {
+            radar1.resize();
+            radar2.resize();
+            chart1.resize();
+        });
+    </script>
+</body>
+</html>
